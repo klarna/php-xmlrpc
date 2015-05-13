@@ -3666,7 +3666,8 @@ class Klarna
             $status = $xmlrpcresp->faultCode();
 
             if ($status !== 0) {
-                throw new KlarnaException($xmlrpcresp->faultString(), $status);
+                $errorMessage = $this->fixMessageEncoding($xmlrpcresp->faultString());
+                throw new KlarnaException($errorMessage, $status);
             }
 
             return php_xmlrpc_decode($xmlrpcresp->value());
@@ -4417,6 +4418,19 @@ class Klarna
         }
     }
 
+    /**
+     * Fixes originalMessage encoding
+     *
+     * @param string $originalMessage
+     * @return string
+     */
+    private function fixMessageEncoding($originalMessage)
+    {
+        $possibleInputEncodings = ['ISO-8859-1', 'UTF-8'];
+        $outputEncoding = mb_internal_encoding();
+
+        return mb_convert_encoding($originalMessage, $outputEncoding, $possibleInputEncodings);
+    }
 } //End Klarna
 
 /**
