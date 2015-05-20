@@ -4421,27 +4421,27 @@ class Klarna
     /**
      * Fixes originalMessage encoding
      *
-     * @param $originalMessage
+     * @param string $originalMessage
      * @param string $inputEncoding (defaults to ISO-8859-1)
      * @param string $outputEncoding (defaults to UTF-8)
      * @return string
      */
     private function _fixMessageEncoding($originalMessage, $inputEncoding = 'ISO-8859-1', $outputEncoding = 'UTF-8')
     {
-        if (extension_loaded('intl') and class_exists('UConverter')) {
-            $fixedMessage = UConverter::transcode($originalMessage, $outputEncoding, $inputEncoding);
-            return $fixedMessage;
+        if (extension_loaded('intl')) {
+
+            return UConverter::transcode($originalMessage, $outputEncoding, $inputEncoding);
         }
         if (extension_loaded('mbstring')) {
-            $fixedMessage = mb_convert_encoding($originalMessage, $outputEncoding, $inputEncoding);
-            return $fixedMessage;
+
+            return mb_convert_encoding($originalMessage, $outputEncoding, $inputEncoding);
         }
         if (extension_loaded('iconv')) {
-            $fixedMessage = iconv($inputEncoding, $outputEncoding, $originalMessage);
-            return $fixedMessage;
+
+            return iconv($inputEncoding, $outputEncoding, $originalMessage);
         }
-        $fixedMessage = preg_replace('#[[:^ascii:]]#', '?', $originalMessage);
-        return $fixedMessage;
+
+        return preg_replace('#[[:^ascii:]]#', '?', $originalMessage);
     }
 } //End Klarna
 
