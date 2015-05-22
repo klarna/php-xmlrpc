@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for invalid KlarnaAddr object
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,16 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_InvalidKlarnaAddrException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
-     *
-     * @return string
+     * Constructor
      */
-    public function __toString()
+    public function __construct()
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        parent::__construct(
+            "Supplied address is not a KlarnaAddr object!",
+            50011
+        );
     }
 }

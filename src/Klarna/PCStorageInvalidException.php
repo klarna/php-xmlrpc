@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for invalid pcstorage class
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,19 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_PCStorageInvalidException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
+     * Constructor
      *
-     * @return string
+     * @param string $className     classname
+     * @param string $pclassStorage pcstorage class file
      */
-    public function __toString()
+    public function __construct($className, $pclassStorage)
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        parent::__construct(
+            "$className located in $pclassStorage is not a PCStorage instance.",
+            50052
+        );
     }
 }

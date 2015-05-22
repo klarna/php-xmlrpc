@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for missing Configuration field
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,16 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_ConfigFieldMissingException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
+     * Constructor
      *
-     * @return string
+     * @param string $field config field
      */
-    public function __toString()
+    public function __construct($field)
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        parent::__construct("Config field '{$field}' is not valid!", 50003);
+
     }
 }

@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for Unknown Encoding
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,17 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_UnknownEncodingException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
+     * Constructor
      *
-     * @return string
+     * @param int $encoding encoding
      */
-    public function __toString()
+    public function __construct($encoding)
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        parent::__construct(
+            "Unknown PNO/SSN encoding constant! ({$encoding})", 50091
+        );
     }
 }

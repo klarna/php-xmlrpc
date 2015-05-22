@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for Unknown Currency
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,15 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_UnknownCurrencyException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
+     * Constructor
      *
-     * @return string
+     * @param mixed $currency currency
      */
-    public function __toString()
+    public function __construct($currency)
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        parent::__construct("Unknown currency! ({$currency})", 50008);
     }
 }

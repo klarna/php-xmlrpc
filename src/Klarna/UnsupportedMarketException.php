@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for invalid Email
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,21 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_UnsupportedMarketException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
+     * Constructor
      *
-     * @return string
+     * @param string|array $countries allowed countries
      */
-    public function __toString()
+    public function __construct($countries)
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        if (is_array($countries)) {
+            $countries = implode(", ", $countries);
+        }
+        parent::__construct(
+            "This method is only available for customers from: {$countries}",
+            50025
+        );
     }
 }

@@ -13,8 +13,7 @@
  */
 
 /**
- * KlarnaException class, only used so it says "KlarnaException" instead of
- * Exception.
+ * Exception for Country and Currency mismatch
  *
  * @category  Payment
  * @package   KlarnaAPI
@@ -23,15 +22,21 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-class KlarnaException extends Exception
+class Klarna_CountryCurrencyMismatchException extends KlarnaException
 {
     /**
-     * Returns an error message readable by end customers.
+     * Constructor
      *
-     * @return string
+     * @param mixed $country  country
+     * @param mixed $currency currency
      */
-    public function __toString()
+    public function __construct($country, $currency)
     {
-        return $this->getMessage() . " (#".$this->code.")";
+        $countryCode = KlarnaCountry::getCode($country);
+        parent::__construct(
+            "Mismatching country/currency for '{$countryCode}'! ".
+            "[country: $country currency: $currency]",
+            50011
+        );
     }
 }
