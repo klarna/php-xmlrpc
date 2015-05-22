@@ -3223,11 +3223,6 @@ class Klarna
             return $this->pclasses;
         }
 
-        include_once 'pclasses/storage.intf.php';
-        $className = $this->pcStorage.'storage';
-        $pclassStorage = dirname(__FILE__) . "/pclasses/{$className}.class.php";
-
-        include_once $pclassStorage;
         $storage = new $className;
 
         if (!($storage instanceof PCStorage)) {
@@ -3533,19 +3528,13 @@ class Klarna
      */
     protected function initCheckout()
     {
-        $dir = dirname(__FILE__);
+        $classes = array('ThreatMetrix');
 
-        //Require the CheckoutHTML interface/abstract class
-        include_once $dir.'/checkout/checkouthtml.intf.php';
-
-        //Iterate over all .class.php files in checkout/
-        foreach (glob($dir.'/checkout/*.class.php') as $checkout) {
+        foreach ($classes as $className) {
             if (!self::$debug) {
                 ob_start();
             }
-            include_once $checkout;
 
-            $className = basename($checkout, '.class.php');
             $cObj = new $className;
 
             if ($cObj instanceof CheckoutHTML) {
@@ -3574,12 +3563,7 @@ class Klarna
         if (empty($this->coObjects)) {
             $this->initCheckout();
         }
-        $dir = dirname(__FILE__);
 
-        //Require the CheckoutHTML interface/abstract class
-        include_once $dir.'/checkout/checkouthtml.intf.php';
-
-        //Iterate over all .class.php files in
         $html = "\n";
         foreach ($this->coObjects as $cObj) {
             if (!self::$debug) {
@@ -4418,58 +4402,3 @@ class Klarna
     }
 
 } //End Klarna
-
-/**
- * Include the {@link KlarnaConfig} class.
- */
-require_once 'klarnaconfig.php';
-
-/**
- * Include the {@link KlarnaPClass} class.
- */
-require_once 'klarnapclass.php';
-
-/**
- * Include the {@link KlarnaCalc} class.
- */
-require_once 'klarnacalc.php';
-
-/**
- * Include the {@link KlarnaAddr} class.
- */
-require_once 'klarnaaddr.php';
-
-/**
- * Include the Exception classes.
- */
-require_once 'Exceptions.php';
-
-/**
- * Include the KlarnaEncoding class.
- */
-require_once 'Encoding.php';
-
-
-/**
- * Include the KlarnaFlags class.
- */
-require_once 'Flags.php';
-
-/**
- * Include KlarnaCountry, KlarnaCurrency, KlarnaLanguage classes
- */
-require_once 'Country.php';
-require_once 'Currency.php';
-require_once 'Language.php';
-
-/**
- * Include cURL wrappers
- */
-require_once 'CurlTransport.php';
-require_once 'CurlHandle.php';
-
-/**
- * Include cURL requests and responses
- */
-require_once 'CheckoutServiceRequest.php';
-require_once 'CheckoutServiceResponse.php';

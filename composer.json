@@ -13,5 +13,8 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=5.2.16"
+    },
+    "autoload": {
+        "psr-0": { "": "src/" }
     }
 }
