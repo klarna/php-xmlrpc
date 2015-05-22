@@ -1,12 +1,6 @@
 <?php
 
-$root = dirname(dirname(__FILE__));
-
-require_once $root . '/Klarna.php';
-
-// Dependencies from http://phpxmlrpc.sourceforge.net/
-require_once $root . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc.inc';
-require_once $root . '/transport/xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc';
+require_once dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
 
 $klarna = new Klarna();
 $config = new KlarnaConfig();
