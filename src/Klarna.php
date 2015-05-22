@@ -3208,6 +3208,14 @@ class Klarna
             return $this->pclasses;
         }
 
+        $storage = $this->pcStorage;
+        if ($storage === 'json' || $storage === 'xml' || $storage === 'sql') {
+            $storage = strtoupper($storage);
+        } else if ($storage === 'mysql') {
+            $storage = 'MySQL';
+        }
+
+        $className = $storage . 'Storage';
         $storage = new $className;
 
         if (!($storage instanceof PCStorage)) {
