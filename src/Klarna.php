@@ -23,16 +23,6 @@ if (!defined("ENT_HTML401")) {
  * All strings inputted need to be encoded with ISO-8859-1.<br>
  * In addition you need to decode HTML entities, if they exist.<br>
  *
- * For more information see our
- *
- * Dependencies:
- *
- *  xmlrpc-3.0.0.beta/lib/xmlrpc.inc
- *      from {@link http://phpxmlrpc.sourceforge.net/}
- *
- * xmlrpc-3.0.0.beta/lib/xmlrpc_wrappers.inc
- *      from {@link http://phpxmlrpc.sourceforge.net/}
- *
  * @category  Payment
  * @package   KlarnaAPI
  * @author    MS Dev <ms.modules@klarna.com>
