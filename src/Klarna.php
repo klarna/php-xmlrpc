@@ -3546,6 +3546,8 @@ class Klarna
      *
      * @see CheckoutHTML
      *
+     * @deprecated
+     *
      * @return string  A HTML string.
      */
     public function checkoutHTML()
