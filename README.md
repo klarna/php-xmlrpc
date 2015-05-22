@@ -32,4 +32,4 @@ If you have any questions concerning this product or the implementation,
 please contact [integration@klarna.com](mailto:integration@klarna.com).
 
 ## License
-The Klarna XMLRPC PHP library is released under [BSD-2](http://opensource.org/licenses/BSD-2-Clause)
+The Klarna XMLRPC PHP library is released under [Apache License, Version 2.0](http://www.apache.org/LICENSE-2.0)

@@ -2,7 +2,7 @@
     "name": "klarna/php-xmlrpc",
     "description": "PHP SDK for Klarna's XMLRPC API",
     "homepage": "http://developers.klarna.com",
-    "license": "BSD-2",
+    "license": "Apache-2.0",
     "type": "library",
     "authors": [
         {
