@@ -6,7 +6,7 @@
  *
  * @category  Payment
  * @package   KlarnaAPI
- * @author    MINT <ms.modules@klarna.com>
+ * @author    Klarna <support@klarna.com>
  * @copyright 2014 Klarna AB
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
@@ -17,7 +17,7 @@
  *
  * @category  Payment
  * @package   KlarnaAPI
- * @author    MINT <ms.modules@klarna.com>
+ * @author    Klarna <support@klarna.com>
  * @copyright 2014 Klarna AB
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
