@@ -21,7 +21,7 @@
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2014 Klarna AB
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
@@ -32,31 +32,40 @@
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2014 Klarna AB
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
 class CheckoutServiceRequest
 {
     /**
+     * Configuration
+     *
      * @var ArrayAccess
      */
     protected $config;
 
     /**
+     * Request parameters
+     *
      * @var array
      */
     protected $params;
 
     /**
+     * Request URI
+     *
      * @var string
      */
     protected $uri = 'https://api.klarna.com/touchpoint/checkout/';
 
     /**
+     * Media type of the response
+     *
      * @var string
      */
-    protected $accept = 'application/vnd.klarna.touchpoint-checkout.payment-methods-v1+json';
+    protected $accept
+        = 'application/vnd.klarna.touchpoint-checkout.payment-methods-v1+json';
 
     /**
      * Constructor

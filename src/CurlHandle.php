@@ -21,7 +21,7 @@
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2014 Klarna AB
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
@@ -32,14 +32,16 @@
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2014 Klarna AB
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
 class CurlHandle
 {
     /**
-     * @var cURL
+     * Internal cURL resource
+     *
+     * @var resource
      */
     protected $handle;
 

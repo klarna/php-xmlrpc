@@ -16,12 +16,12 @@
  *
  * Klarna API
  *
- * PHP Version 5.3
+ * PHP version 5.3
  *
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2012 Klarna AB (http://klarna.com)
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
@@ -40,7 +40,7 @@ if (!defined("ENT_HTML401")) {
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2012 Klarna AB (http://klarna.com)
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
@@ -347,9 +347,10 @@ class Klarna
     /**
      * The storage class for PClasses.
      *
-     * Use 'xml' for xmlstorage.class.php.<br>
-     * Use 'mysql' for mysqlstorage.class.php.<br>
-     * Use 'json' for jsonstorage.class.php.<br>
+     * Use 'xml' for XMLStorage<br>
+     * Use 'mysql' for MySQLStorage<br>
+     * Use 'sql' for SQLStorage<br>
+     * Use 'json' for JSONStorage<br>
      *
      * @var string
      */

@@ -16,12 +16,12 @@
  *
  * Klarna Exceptions
  *
- * PHP Version 5.3
+ * PHP version 5.3
  *
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2012 Klarna AB (http://klarna.com)
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
@@ -32,7 +32,7 @@
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
- * @copyright 2012 Klarna AB (http://klarna.com)
+ * @copyright 2015 Klarna AB
  * @license   http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link      https://developers.klarna.com/
  */
