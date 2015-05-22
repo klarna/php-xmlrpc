@@ -13,11 +13,6 @@
  */
 
 /**
- * Include the {@link PCStorage} interface.
- */
-require_once 'storage.intf.php';
-
-/**
  * JSON storage class for KlarnaPClass
  *
  * This class is an JSON implementation of the PCStorage interface.
@@ -32,8 +27,6 @@ require_once 'storage.intf.php';
 
 class JSONStorage extends PCStorage
 {
-
-
     /**
      * return the name of the storage type
      *

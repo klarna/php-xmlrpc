@@ -12,8 +12,6 @@
  * @link      https://developers.klarna.com/
  */
 
-require_once 'Country.php';
-
 /**
  * KlarnaException class, only used so it says "KlarnaException" instead of
  * Exception.

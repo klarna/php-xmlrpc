@@ -13,11 +13,6 @@
  */
 
 /**
- * Include the {@link PCStorage} interface.
- */
-require_once 'storage.intf.php';
-
-/**
  * MySQL storage class for KlarnaPClass
  *
  * This class is an MySQL implementation of the PCStorage interface.<br>

@@ -13,11 +13,6 @@
  */
 
 /**
- * Include the {@link PCStorage} interface.
- */
-require_once 'storage.intf.php';
-
-/**
  * XML storage class for KlarnaPClass
  *
  * This class is an XML implementation of the PCStorage interface.

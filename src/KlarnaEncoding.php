@@ -12,8 +12,6 @@
  * @link      https://developers.klarna.com/
  */
 
-require_once 'Exceptions.php';
-
 /**
  * Encoding class
  *
