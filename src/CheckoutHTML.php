@@ -23,11 +23,10 @@
  * @copyright  2012 Klarna AB (http://klarna.com)
  * @license    http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link       https://developers.klarna.com/
- * @deprecated
+ * @deprecated Class deprecated in version 3.3.0
  */
 abstract class CheckoutHTML
 {
-
     /**
      * Creates a session ID used for e.g. client identification and fraud
      * prevention.

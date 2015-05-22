@@ -4,7 +4,8 @@
  *
  * PHP Version 5.3
  *
- * @ignore  Do not show in PHPDoc.
+ * @ignore Do not show in PHPDoc.
+ *
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
@@ -18,7 +19,8 @@
  *
  * PClasses are used in conjunction with KlarnaCalc to determine part payment costs.
  *
- * @ignore    Do not show in PHPDoc.
+ * @ignore Do not show in PHPDoc.
+ *
  * @category  Payment
  * @package   KlarnaAPI
  * @author    Klarna <support@klarna.com>
@@ -28,7 +30,6 @@
  */
 class KlarnaPClass
 {
-
     /**
      * Invoice type/identifier, used for invoice purchases.
      *
@@ -85,6 +86,7 @@ class KlarnaPClass
      * HTML entities for special characters.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var string
      */
     protected $description;
@@ -93,6 +95,7 @@ class KlarnaPClass
      * Number of months for this PClass.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var int
      */
     protected $months;
@@ -101,6 +104,7 @@ class KlarnaPClass
      * PClass starting fee.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var float
      */
     protected $startFee;
@@ -109,6 +113,7 @@ class KlarnaPClass
      * PClass invoice/handling fee.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var float
      */
     protected $invoiceFee;
@@ -117,6 +122,7 @@ class KlarnaPClass
      * PClass interest rate.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var float
      */
     protected $interestRate;
@@ -125,6 +131,7 @@ class KlarnaPClass
      * PClass minimum amount for purchase/product.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var float
      */
     protected $minAmount;
@@ -133,6 +140,7 @@ class KlarnaPClass
      * PClass country.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @see KlarnaCountry
      * @var int
      */
@@ -142,6 +150,7 @@ class KlarnaPClass
      * PClass ID.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var int
      */
     protected $id;
@@ -157,6 +166,7 @@ class KlarnaPClass
      * @see self::MOBILE
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var int
      */
     protected $type;
@@ -166,6 +176,7 @@ class KlarnaPClass
      * Compare it with e.g. $_SERVER['REQUEST_TIME'].<br>
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var int
      */
     protected $expire;
@@ -174,6 +185,7 @@ class KlarnaPClass
      * Merchant ID / Estore ID.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var int
      */
     protected $eid;
@@ -403,7 +415,7 @@ class KlarnaPClass
     /**
      * Returns the ID for this PClass.
      *
-     * @return int  PClass identifier.
+     * @return int PClass identifier.
      */
     public function getId()
     {
@@ -420,7 +432,7 @@ class KlarnaPClass
      * @see self::DELAY
      * @see self::MOBILE
      *
-     * @return int  PClass type identifier.
+     * @return int PClass type identifier.
      */
     public function getType()
     {
@@ -502,7 +514,7 @@ class KlarnaPClass
      * <b>Note</b>:<br>
      * Encoded with HTML entities.
      *
-     * @return string  PClass description.
+     * @return string PClass description.
      */
     public function getDescription()
     {
@@ -512,7 +524,7 @@ class KlarnaPClass
     /**
      * Returns the number of months for this PClass.
      *
-     * @return int  Number of months.
+     * @return int Number of months.
      */
     public function getMonths()
     {
@@ -522,7 +534,7 @@ class KlarnaPClass
     /**
      * Returns the starting fee for this PClass.
      *
-     * @return float  Starting fee.
+     * @return float Starting fee.
      */
     public function getStartFee()
     {
@@ -532,7 +544,7 @@ class KlarnaPClass
     /**
      * Returns the invoicing/handling fee for this PClass.
      *
-     * @return float  Invoicing fee.
+     * @return float Invoicing fee.
      */
     public function getInvoiceFee()
     {
@@ -542,7 +554,7 @@ class KlarnaPClass
     /**
      * Returns the interest rate for this PClass.
      *
-     * @return float  Interest rate.
+     * @return float Interest rate.
      */
     public function getInterestRate()
     {
@@ -552,7 +564,7 @@ class KlarnaPClass
     /**
      * Returns the minimum order/product amount for which this PClass is allowed.
      *
-     * @return float  Minimum amount to use this PClass.
+     * @return float Minimum amount to use this PClass.
      */
     public function getMinAmount()
     {
@@ -563,6 +575,7 @@ class KlarnaPClass
      * Returns the country related to this PClass.
      *
      * @see KlarnaCountry
+     *
      * @return int {@link KlarnaCountry} constant.
      */
     public function getCountry()

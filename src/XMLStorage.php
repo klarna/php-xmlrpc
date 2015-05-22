@@ -26,7 +26,6 @@
  */
 class XMLStorage extends PCStorage
 {
-
     /**
      * The internal XML document.
      *
@@ -59,7 +58,7 @@ class XMLStorage extends PCStorage
     }
 
     /**
-     * return the name of the storage type
+     * Return the name of the storage type
      *
      * @return string
      */

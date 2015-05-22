@@ -24,7 +24,6 @@
  */
 class KlarnaAddr
 {
-
     /**
      * Email address.
      *
@@ -359,6 +358,7 @@ class KlarnaAddr
      * @param string $company company name
      *
      * @see Klarna::setReference
+     *
      * @return void
      */
     public function setCompanyName($company)

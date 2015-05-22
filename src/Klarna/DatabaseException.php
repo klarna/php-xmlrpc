@@ -22,7 +22,6 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-
 class Klarna_DatabaseException extends KlarnaException
 {
 }

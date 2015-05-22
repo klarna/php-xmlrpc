@@ -24,7 +24,6 @@
  */
 class KlarnaFlags
 {
-
     /**
      * Specifies that no flag is to be used.
      *
@@ -97,7 +96,6 @@ class KlarnaFlags
      * A code which indicates that the given name should be returned with
      * the address. If no given name is registered, this will behave as
      * {@link KlarnaFlags::GA_ALL GA_ALL}.
-     *
      */
     const GA_GIVEN = 5;
 

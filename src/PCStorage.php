@@ -26,7 +26,6 @@
  */
 abstract class PCStorage
 {
-
     /**
      * An array of KlarnaPClasses.
      *

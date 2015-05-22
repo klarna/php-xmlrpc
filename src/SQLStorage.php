@@ -50,7 +50,6 @@
  */
 class SQLStorage extends PCStorage
 {
-
     /**
      * Database name.
      *
@@ -101,7 +100,7 @@ class SQLStorage extends PCStorage
     protected $pdo;
 
     /**
-     * return the name of the storage type
+     * Return the name of the storage type
      *
      * @return string
      */

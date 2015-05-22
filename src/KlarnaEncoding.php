@@ -234,7 +234,8 @@ class KlarnaEncoding
     }
 
     /**
-     * Checks if the specified PNO is correct according to specified encoding constant.
+     * Checks if the specified PNO is correct according to specified
+     * encoding constant.
      *
      * @param string $pno PNO/SSN string.
      * @param int    $enc {@link KlarnaEncoding PNO/SSN encoding} constant.

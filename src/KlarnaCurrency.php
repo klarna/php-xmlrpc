@@ -1,5 +1,4 @@
 <?php
-
 /**
  * KlarnaCurrency
  *
@@ -25,7 +24,6 @@
  */
 class KlarnaCurrency
 {
-
     /**
      * Currency constant for Swedish Crowns (SEK).
      *

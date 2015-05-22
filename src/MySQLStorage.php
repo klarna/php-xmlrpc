@@ -50,7 +50,6 @@
  */
 class MySQLStorage extends PCStorage
 {
-
     /**
      * Database name.
      *
@@ -94,7 +93,7 @@ class MySQLStorage extends PCStorage
     protected $link;
 
     /**
-     * return the name of the storage type
+     * Return the name of the storage type
      *
      * @return string
      */

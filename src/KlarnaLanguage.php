@@ -1,5 +1,4 @@
 <?php
-
 /**
  * KlarnaLanguage
  *
@@ -25,7 +24,6 @@
  */
 class KlarnaLanguage
 {
-
     /**
      * Language constant for Danish (DA).<br>
      * ISO639_DA

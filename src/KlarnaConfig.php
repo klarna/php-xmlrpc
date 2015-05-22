@@ -45,11 +45,11 @@
  */
 class KlarnaConfig implements ArrayAccess
 {
-
     /**
      * An array containing all the options for this config.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var array
      */
     protected $options;
@@ -65,6 +65,7 @@ class KlarnaConfig implements ArrayAccess
      * URI to the config file.
      *
      * @ignore Do not show in PHPDoc.
+     *
      * @var string
      */
     protected $file;

@@ -42,7 +42,6 @@
  */
 class KlarnaCalc
 {
-
     /**
      * This constant tells the irr function when to stop.
      * If the calculation error is lower than this the calculation is done.
@@ -65,7 +64,8 @@ class KlarnaCalc
     }
 
     /**
-     * npv - Net Present Value
+     * Net Present Value
+     *
      * Calculates the difference between the initial loan to the customer
      * and the individual payments adjusted for the inverse of the interest
      * rate. The variable we are searching for is $rate and if $pval,

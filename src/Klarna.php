@@ -242,6 +242,7 @@ class Klarna
      * An array of named travel info.
      *
      * @ignore Do not show this in PHPDoc.
+     *
      * @var array
      */
     protected $travelInfo = array();
@@ -250,6 +251,7 @@ class Klarna
      * An array of named activate info
      *
      * @ignore
+     *
      * @var array
      */
     protected $activateInfo = array();
@@ -315,6 +317,7 @@ class Klarna
      * Array of HTML entities, used to create numeric htmlentities.
      *
      * @ignore Do not show this in PHPDoc.
+     *
      * @var array
      */
     protected static $htmlentities = false;
@@ -356,6 +359,7 @@ class Klarna
      * PCStorage instance.
      *
      * @ignore Do not show this in PHPDoc.
+     *
      * @var PCStorage
      */
     protected $pclasses;
@@ -364,6 +368,7 @@ class Klarna
      * ArrayAccess instance.
      *
      * @ignore Do not show this in PHPDoc.
+     *
      * @var ArrayAccess
      */
     protected $config;
@@ -599,11 +604,11 @@ class Klarna
     /**
      * Sets and initializes this Klarna object using the supplied config object.
      *
-     * @param KlarnaConfig &$config Config object.
+     * @param KlarnaConfig $config Config object.
      *
-     * @see KlarnaConfig
-     * @throws  KlarnaException
-     * @return  void
+     * @see    KlarnaConfig
+     * @throws KlarnaException
+     * @return void
      */
     public function setConfig(&$config)
     {
@@ -1979,7 +1984,6 @@ class Klarna
      *
      * @param string $rno Reservation number.
      *
-     *
      * @throws KlarnaException
      * @return bool True, if the cancellation was successful.
      */
@@ -2013,7 +2017,6 @@ class Klarna
      * @param string $rno    Reservation number.
      * @param int    $amount Amount including VAT.
      * @param int    $flags  Options which affect the behaviour.
-     *
      *
      * @throws KlarnaException
      * @return bool    True, if the change was successful.
@@ -2353,7 +2356,7 @@ class Klarna
 
         //No addresses used for phone transactions
         $billing = $shipping = '';
-        if ( !($flags & KlarnaFlags::RSRV_PHONE_TRANSACTION) ) {
+        if (!($flags & KlarnaFlags::RSRV_PHONE_TRANSACTION)) {
             $billing = $this->assembleAddr($this->billing);
             $shipping = $this->assembleAddr($this->shipping);
 
@@ -2430,7 +2433,6 @@ class Klarna
      * @param int    $amount The amount to be subtracted from the reservation.
      * @param int    $flags  Options which affect the behaviour.
      *
-     *
      * @throws KlarnaException
      * @return string A new reservation number.
      */
@@ -2474,7 +2476,6 @@ class Klarna
      * @param int $no      The number of OCR numbers to reserve.
      * @param int $country {@link KlarnaCountry} constant.
      *
-     *
      * @throws KlarnaException
      * @return array An array of OCR numbers.
      */
@@ -2510,7 +2511,6 @@ class Klarna
      *
      * @param string $pno      Social security number, Personal number, ...
      * @param int    $encoding {@link KlarnaEncoding PNO Encoding} constant.
-     *
      *
      * @throws KlarnaException
      * @return bool    True, if customer has an account.
@@ -2637,7 +2637,6 @@ class Klarna
      *
      * @param string $invNo Invoice number.
      *
-     *
      * @throws KlarnaException
      * @return float The total amount.
      */
@@ -2669,7 +2668,6 @@ class Klarna
      *
      * @param string $invNo   Invoice number.
      * @param string $orderid Estores order number.
-     *
      *
      * @throws KlarnaException
      * @return string  Invoice number.
@@ -2847,7 +2845,7 @@ class Klarna
      * @param string $invNo  Invoice number.
      * @param string $credNo Credit number.
      *
-     * @see  Klarna::addArtNo()
+     * @see Klarna::addArtNo()
      *
      * @throws KlarnaException
      * @return string  Invoice number.
@@ -2900,7 +2898,6 @@ class Klarna
      * @param string $artNo Article number.
      * @param int    $qty   Quantity of specified article.
      *
-     *
      * @throws KlarnaException
      * @return string  Invoice number.
      */
@@ -2937,7 +2934,6 @@ class Klarna
      * @param string $invNo     Invoice number.
      * @param int    $type      Charge type.
      * @param int    $newAmount The new amount for the charge.
-     *
      *
      * @throws KlarnaException
      * @return string  Invoice number.
@@ -3022,7 +3018,7 @@ class Klarna
      *
      * @param string $invNo Invoice number.
      *
-     * @see  Klarna::addArtNo()
+     * @see Klarna::addArtNo()
      *
      * @throws KlarnaException
      * @return float The amount of the goods.
@@ -3068,7 +3064,6 @@ class Klarna
      *
      * @param string $id   Reservation number or invoice number.
      * @param int    $type 0 if $id is an invoice or reservation, 1 for order id
-     *
      *
      * @throws KlarnaException
      * @return string  The order status.
@@ -3408,7 +3403,7 @@ class Klarna
     /**
      * Sorts the specified array of KlarnaPClasses.
      *
-     * @param array &$array An array of {@link KlarnaPClass PClasses}.
+     * @param array $array An array of {@link KlarnaPClass PClasses}.
      *
      * @return void
      */
@@ -3514,6 +3509,7 @@ class Klarna
      * Initializes the checkoutHTML objects.
      *
      * @see Klarna::checkoutHTML()
+     *
      * @return void
      */
     protected function initCheckout()
@@ -3546,9 +3542,9 @@ class Klarna
      *
      * @see CheckoutHTML
      *
-     * @deprecated
+     * @deprecated Method deprecated in version 3.3.0
      *
-     * @return string  A HTML string.
+     * @return string A HTML string.
      */
     public function checkoutHTML()
     {
@@ -3837,7 +3833,9 @@ class Klarna
         return str_replace(
             array_keys(
                 self::$htmlentities
-            ), self::$htmlentities, htmlentities($str, ENT_COMPAT | ENT_HTML401, $charset)
+            ),
+            self::$htmlentities,
+            htmlentities($str, ENT_COMPAT | ENT_HTML401, $charset)
         );
     }
 
@@ -3845,7 +3843,7 @@ class Klarna
      * Prints debug information if debug is set to true.
      * $msg is used as header/footer in the output.
      *
-     * if FirePHP is available it will be used instead of
+     * If FirePHP is available it will be used instead of
      * dumping the debug info into the document.
      *
      * It uses print_r and encapsulates it in HTML/XML comments.
@@ -3872,7 +3870,7 @@ class Klarna
     /**
      * Checks/fixes so the invNo input is valid.
      *
-     * @param string &$invNo Invoice number.
+     * @param string $invNo Invoice number.
      *
      * @throws KlarnaException
      * @return void
@@ -3893,7 +3891,7 @@ class Klarna
     /**
      * Checks/fixes so the quantity input is valid.
      *
-     * @param int &$qty Quantity.
+     * @param int $qty Quantity.
      *
      * @throws KlarnaException
      * @return void
@@ -3914,7 +3912,7 @@ class Klarna
     /**
      * Checks/fixes so the artTitle input is valid.
      *
-     * @param string &$artTitle Article title.
+     * @param string $artTitle Article title.
      *
      * @throws KlarnaException
      * @return void
@@ -3932,7 +3930,7 @@ class Klarna
     /**
      * Checks/fixes so the artNo input is valid.
      *
-     * @param int|string &$artNo Article number.
+     * @param int|string $artNo Article number.
      *
      * @throws KlarnaException
      * @return void
@@ -3951,7 +3949,7 @@ class Klarna
     /**
      * Checks/fixes so the credNo input is valid.
      *
-     * @param string &$credNo Credit number.
+     * @param string $credNo Credit number.
      *
      * @throws KlarnaException
      * @return void
@@ -3976,7 +3974,7 @@ class Klarna
     /**
      * Checks so that artNos is an array and is not empty.
      *
-     * @param array &$artNos Array from {@link Klarna::addArtNo()}.
+     * @param array $artNos Array from {@link Klarna::addArtNo()}.
      *
      * @throws KlarnaException
      * @return void
@@ -3994,7 +3992,7 @@ class Klarna
     /**
      * Checks/fixes so the integer input is valid.
      *
-     * @param int    &$int  {@link KlarnaFlags flags} constant.
+     * @param int    $int   {@link KlarnaFlags flags} constant.
      * @param string $field Name of the field.
      *
      * @throws KlarnaException
@@ -4016,7 +4014,7 @@ class Klarna
     /**
      * Checks/fixes so the VAT input is valid.
      *
-     * @param float &$vat VAT.
+     * @param float $vat VAT.
      *
      * @throws KlarnaException
      * @return void
@@ -4037,7 +4035,7 @@ class Klarna
     /**
      * Checks/fixes so the amount input is valid.
      *
-     * @param int &$amount Amount.
+     * @param int $amount Amount.
      *
      * @throws KlarnaException
      * @return void
@@ -4061,7 +4059,7 @@ class Klarna
     /**
      * Checks/fixes so the price input is valid.
      *
-     * @param int &$price Price.
+     * @param int $price Price.
      *
      * @throws KlarnaException
      * @return void
@@ -4086,7 +4084,7 @@ class Klarna
      * Multiplies value with 100 and rounds it.
      * This fixes value/price/amount inputs so that KO can handle them.
      *
-     * @param float &$value value
+     * @param float $value value
      *
      * @return void
      */
@@ -4098,7 +4096,7 @@ class Klarna
     /**
      * Checks/fixes so the discount input is valid.
      *
-     * @param float &$discount Discount amount.
+     * @param float $discount Discount amount.
      *
      * @throws KlarnaException
      * @return void
@@ -4124,7 +4122,7 @@ class Klarna
     /**
      * Checks/fixes so that the estoreOrderNo input is valid.
      *
-     * @param string &$estoreOrderNo Estores order number.
+     * @param string $estoreOrderNo Estores order number.
      *
      * @throws KlarnaException
      * @return void
@@ -4146,8 +4144,8 @@ class Klarna
     /**
      * Checks/fixes to the PNO/SSN input is valid.
      *
-     * @param string &$pno Personal number, social security  number, ...
-     * @param int    $enc  {@link KlarnaEncoding PNO Encoding} constant.
+     * @param string $pno Personal number, social security  number, ...
+     * @param int    $enc {@link KlarnaEncoding PNO Encoding} constant.
      *
      * @throws KlarnaException
      * @return void
@@ -4166,7 +4164,7 @@ class Klarna
     /**
      * Checks/fixes to the country input is valid.
      *
-     * @param int &$country {@link KlarnaCountry Country} constant.
+     * @param int $country {@link KlarnaCountry Country} constant.
      *
      * @throws KlarnaException
      * @return void
@@ -4187,7 +4185,7 @@ class Klarna
     /**
      * Checks/fixes to the language input is valid.
      *
-     * @param int &$language {@link KlarnaLanguage Language} constant.
+     * @param int $language {@link KlarnaLanguage Language} constant.
      *
      * @throws KlarnaException
      * @return void
@@ -4208,7 +4206,7 @@ class Klarna
     /**
      * Checks/fixes to the currency input is valid.
      *
-     * @param int &$currency {@link KlarnaCurrency Currency} constant.
+     * @param int $currency {@link KlarnaCurrency Currency} constant.
      *
      * @throws KlarnaException
      * @return void
@@ -4229,7 +4227,7 @@ class Klarna
     /**
      * Checks/fixes so no/number is a valid input.
      *
-     * @param int &$no Number.
+     * @param int $no Number.
      *
      * @throws KlarnaException
      * @return void
@@ -4250,7 +4248,7 @@ class Klarna
     /**
      * Checks/fixes so reservation number is a valid input.
      *
-     * @param string &$rno Reservation number.
+     * @param string $rno Reservation number.
      *
      * @throws KlarnaException
      * @return void
@@ -4268,8 +4266,8 @@ class Klarna
     /**
      * Checks/fixes so that reference/refCode are valid.
      *
-     * @param string &$reference Reference string.
-     * @param string &$refCode   Reference code.
+     * @param string $reference Reference string.
+     * @param string $refCode   Reference code.
      *
      * @throws KlarnaException
      * @return void
@@ -4294,7 +4292,7 @@ class Klarna
     /**
      * Checks/fixes so that the OCR input is valid.
      *
-     * @param string &$ocr OCR number.
+     * @param string $ocr OCR number.
      *
      * @throws KlarnaException
      * @return void

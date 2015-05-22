@@ -24,11 +24,10 @@
  * @license   http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link      https://developers.klarna.com/
  */
-
 class JSONStorage extends PCStorage
 {
     /**
-     * return the name of the storage type
+     * Return the name of the storage type
      *
      * @return string
      */

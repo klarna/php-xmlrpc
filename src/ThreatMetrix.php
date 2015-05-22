@@ -1,6 +1,6 @@
 <?php
 /**
- * threatmetrix implementation of checckouthtml
+ * Threatmetrix implementation of ChecckoutHTML
  *
  * PHP Version 5.3
  *
@@ -21,11 +21,10 @@
  * @copyright  2012 Klarna AB (http://klarna.com)
  * @license    http://opensource.org/licenses/BSD-2-Clause BSD-2
  * @link       https://developers.klarna.com/
- * @deprecated
+ * @deprecated Class deprecated in version 3.3.0
  */
 class ThreatMetrix extends CheckoutHTML
 {
-
     /**
      * The ID used in conjunction with the Klarna API.
      *

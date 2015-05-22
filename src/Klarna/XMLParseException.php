@@ -12,7 +12,6 @@
  * @link      https://developers.klarna.com/
  */
 
-
 /**
  * Exception for XML Parse errors
  *
