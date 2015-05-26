@@ -1,0 +1,7 @@
+/vendor/
+/docs/reference
+pclasses.json
+pclasses.xml
+*.sublime-project
+*.sublime-workspace
+*.zip
