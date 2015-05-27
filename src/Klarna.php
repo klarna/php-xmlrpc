@@ -2001,8 +2001,11 @@ class Klarna
 
         $result = $this->xmlrpc_call('extend_expiry_date', $paramList);
 
+        // Default to server location as API does not include timezone info
+        $tz = new DateTimeZone('Europe/Stockholm');
+
         // $result = '20150525T103631';
-        $date = DateTime::createFromFormat('Ymd\THis', $result);
+        $date = DateTime::createFromFormat('Ymd\THis', $result, $tz);
         if ($date === false) {
             throw new KlarnaException(
                 "Could not parse result '{$result}' into date format 'Ymd\\This'"
