@@ -287,13 +287,6 @@ class Klarna
     protected $comment = "";
 
     /**
-     * An array with all the checkoutHTML objects.
-     *
-     * @var array
-     */
-    protected $coObjects = array();
-
-    /**
      * Flag to indicate if the API should output verbose
      * debugging information.
      *
@@ -1652,9 +1645,6 @@ class Klarna
             $this->setShipmentInfo('delay_adjust', KlarnaFlags::NORMAL_SHIPMENT);
         }
 
-        //Make sure we get any session ID's or similar
-        $this->initCheckout();
-
         //function add_transaction_digest
         $string = "";
         foreach ($this->goodsList as $goods) {
@@ -1708,9 +1698,6 @@ class Klarna
         if ($clear === true) {
             //Make sure any stored values that need to be unique between
             //purchases are cleared.
-            foreach ($this->coObjects as $co) {
-                $co->clear();
-            }
             $this->clear();
         }
 
@@ -1941,9 +1928,6 @@ class Klarna
             $this->setShipmentInfo('delay_adjust', KlarnaFlags::NORMAL_SHIPMENT);
         }
 
-        //Make sure we get any session ID's or similar
-        $this->initCheckout($this, $this->_eid);
-
         $digestSecret = self::digest(
             "{$this->_eid}:{$pno}:{$amount}:{$this->_secret}"
         );
@@ -1983,9 +1967,6 @@ class Klarna
         if ($clear === true) {
             //Make sure any stored values that need to be unique between
             //purchases are cleared.
-            foreach ($this->coObjects as $co) {
-                $co->clear();
-            }
             $this->clear();
         }
 
@@ -3529,69 +3510,6 @@ class Klarna
     }
 
     /**
-     * Initializes the checkoutHTML objects.
-     *
-     * @see Klarna::checkoutHTML()
-     *
-     * @return void
-     */
-    protected function initCheckout()
-    {
-        $classes = array('ThreatMetrix');
-
-        foreach ($classes as $className) {
-            if (!self::$debug) {
-                ob_start();
-            }
-
-            $cObj = new $className;
-
-            if ($cObj instanceof CheckoutHTML) {
-                $cObj->init($this, $this->_eid);
-                $this->coObjects[$className] = $cObj;
-            }
-
-            if (!self::$debug) {
-                ob_end_clean();
-            }
-        }
-    }
-
-    /**
-     * Returns the checkout page HTML from the checkout classes.
-     *
-     * <b>Note</b>:<br>
-     * This method uses output buffering to silence unwanted echoes.<br>
-     *
-     * @see CheckoutHTML
-     *
-     * @deprecated Method deprecated in version 3.3.0
-     *
-     * @return string A HTML string.
-     */
-    public function checkoutHTML()
-    {
-        if (empty($this->coObjects)) {
-            $this->initCheckout();
-        }
-
-        $html = "\n";
-        foreach ($this->coObjects as $cObj) {
-            if (!self::$debug) {
-                ob_start();
-            }
-            if ($cObj instanceof CheckoutHTML) {
-                $html .= $cObj->toHTML() . "\n";
-            }
-            if (!self::$debug) {
-                ob_end_clean();
-            }
-        }
-
-        return $html;
-    }
-
-    /**
      * Creates a XMLRPC call with specified XMLRPC method and parameters from array.
      *
      * @param string $method XMLRPC method.
@@ -3750,7 +3668,6 @@ class Klarna
         $this->orderid[1] = "";
 
         $this->artNos = array();
-        $this->coObjects = array();
     }
 
     /**
