@@ -1385,7 +1385,7 @@ class Klarna
         $this->_checkPNO($pno, $encoding);
 
         $digestSecret = self::digest(
-            $this->colon(
+            self::colon(
                 $this->_eid, $pno, $this->_secret
             )
         );
@@ -1733,7 +1733,7 @@ class Klarna
         $this->_checkInvNo($invNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
 
         $paramList = array(
@@ -1773,7 +1773,7 @@ class Klarna
         $this->_checkInvNo($invNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
 
         $paramList = array(
@@ -1988,7 +1988,7 @@ class Klarna
         $this->_checkRNO($rno);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $rno, $this->_secret)
+            self::colon($this->_eid, $rno, $this->_secret)
         );
 
         $paramList = array(
@@ -2028,7 +2028,7 @@ class Klarna
         $this->_checkRNO($rno);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $rno, $this->_secret)
+            self::colon($this->_eid, $rno, $this->_secret)
         );
         $paramList = array(
             $rno,
@@ -2065,7 +2065,7 @@ class Klarna
         $this->_checkInt($flags, 'flags');
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $rno, $amount, $this->_secret)
+            self::colon($this->_eid, $rno, $amount, $this->_secret)
         );
         $paramList = array(
             $rno,
@@ -2484,7 +2484,7 @@ class Klarna
         }
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $rno, $amount, $this->_secret)
+            self::colon($this->_eid, $rno, $amount, $this->_secret)
         );
         $paramList = array(
             $rno,
@@ -2528,7 +2528,7 @@ class Klarna
         }
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $no, $this->_secret)
+            self::colon($this->_eid, $no, $this->_secret)
         );
         $paramList = array(
             $no,
@@ -2561,7 +2561,7 @@ class Klarna
         $this->_checkPNO($pno, $encoding);
 
         $digest = self::digest(
-            $this->colon($this->_eid, $pno, $this->_secret)
+            self::colon($this->_eid, $pno, $this->_secret)
         );
 
         $paramList = array(
@@ -2681,7 +2681,7 @@ class Klarna
         $this->_checkInvNo($invNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
 
         $paramList = array(
@@ -2714,7 +2714,7 @@ class Klarna
         $this->_checkEstoreOrderNo($orderid);
 
         $digestSecret = self::digest(
-            $this->colon($invNo, $orderid, $this->_secret)
+            self::colon($invNo, $orderid, $this->_secret)
         );
 
         $paramList = array(
@@ -2750,7 +2750,7 @@ class Klarna
         $this->_checkInvNo($invNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
         $paramList = array(
             $this->_eid,
@@ -2777,7 +2777,7 @@ class Klarna
         $this->_checkInvNo($invNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
         $paramList = array(
             $this->_eid,
@@ -2825,7 +2825,7 @@ class Klarna
         }
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
         $paramList = array(
             $this->_eid,
@@ -2858,7 +2858,7 @@ class Klarna
         $this->_checkCredNo($credNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
         $paramList = array(
             $this->_eid,
@@ -2944,7 +2944,7 @@ class Klarna
         $this->_checkArtNo($artNo);
 
         $digestSecret = self::digest(
-            $this->colon($invNo, $artNo, $qty, $this->_secret)
+            self::colon($invNo, $artNo, $qty, $this->_secret)
         );
 
         $paramList = array(
@@ -2987,7 +2987,7 @@ class Klarna
         }
 
         $digestSecret = self::digest(
-            $this->colon($invNo, $type, $newAmount, $this->_secret)
+            self::colon($invNo, $type, $newAmount, $this->_secret)
         );
 
         $paramList = array(
@@ -3017,7 +3017,7 @@ class Klarna
         $this->_checkInvNo($invNo);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $invNo, $this->_secret)
+            self::colon($this->_eid, $invNo, $this->_secret)
         );
         $paramList = array(
             $this->_eid,
@@ -3116,7 +3116,7 @@ class Klarna
         }
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $id, $this->_secret)
+            self::colon($this->_eid, $id, $this->_secret)
         );
         $paramList = array(
             $this->_eid,
@@ -3150,7 +3150,7 @@ class Klarna
         $this->_checkPNO($pno, $encoding);
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $pno, $this->_secret)
+            self::colon($this->_eid, $pno, $this->_secret)
         );
         $paramList = array(
             $pno,
@@ -3186,7 +3186,7 @@ class Klarna
         $this->_checkArgument($custNo, 'custNo');
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $pno, $custNo, $this->_secret)
+            self::colon($this->_eid, $pno, $custNo, $this->_secret)
         );
         $paramList = array(
             $pno,
@@ -3216,7 +3216,7 @@ class Klarna
         $this->_checkArgument($custNo, 'custNo');
 
         $digestSecret = self::digest(
-            $this->colon($this->_eid, $custNo, $this->_secret)
+            self::colon($this->_eid, $custNo, $this->_secret)
         );
 
         $paramList = array(
