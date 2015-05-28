@@ -1976,6 +1976,46 @@ class Klarna
     }
 
     /**
+     * Extends the reservations expiration date.
+     *
+     * @param string $rno Reservation number.
+     *
+     * @throws KlarnaException
+     * @return DateTime The new expiration date.
+     */
+    public function extendExpiryDate($rno)
+    {
+        $this->_checkRNO($rno);
+
+        $digestSecret = self::digest(
+            $this->colon($this->_eid, $rno, $this->_secret)
+        );
+
+        $paramList = array(
+            $rno,
+            $this->_eid,
+            $digestSecret
+        );
+
+        self::printDebug('extend_expiry_date', $paramList);
+
+        $result = $this->xmlrpc_call('extend_expiry_date', $paramList);
+
+        // Default to server location as API does not include timezone info
+        $tz = new DateTimeZone('Europe/Stockholm');
+
+        // $result = '20150525T103631';
+        $date = DateTime::createFromFormat('Ymd\THis', $result, $tz);
+        if ($date === false) {
+            throw new KlarnaException(
+                "Could not parse result '{$result}' into date format 'Ymd\\This'"
+            );
+        }
+
+        return $date;
+    }
+
+    /**
      * Cancels a reservation.
      *
      * @param string $rno Reservation number.
