@@ -3651,12 +3651,23 @@ class Klarna
                 }
             }
 
-            //Send the message.
             $selectDateTime = microtime(true);
             if (self::$xmlrpcDebug) {
                 $this->xmlrpc->setDebug(2);
             }
+            //Save previous XML RPC client encoding settings.
+            $tmp_xmlrpc_defencoding = $GLOBALS['xmlrpc_defencoding'];
+            $tmp_xmlrpc_internalencoding = $GLOBALS['xmlrpc_internalencoding'];
+            //Set XML RPC client encoding settings.
+            $GLOBALS['xmlrpc_defencoding'] = 'ISO-8859-1';
+            $GLOBALS['xmlrpc_internalencoding'] = 'UTF-8';
+
+            //Send the message.
             $xmlrpcresp = $this->xmlrpc->send($msg);
+
+            //Restore previous XML RPC client encoding settings.
+            $GLOBALS['xmlrpc_defencoding'] = $tmp_xmlrpc_defencoding;
+            $GLOBALS['xmlrpc_internalencoding'] = $tmp_xmlrpc_internalencoding;
 
             //Calculate time and selectTime.
             $timeend = microtime(true);
