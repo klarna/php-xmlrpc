@@ -3255,9 +3255,7 @@ class Klarna
         $storage = new $className;
 
         if (!($storage instanceof PCStorage)) {
-            throw new Klarna_PCStorageInvalidException(
-                $className, $pclassStorage
-            );
+            throw new Klarna_PCStorageInvalidException($className);
         }
         return $storage;
     }
