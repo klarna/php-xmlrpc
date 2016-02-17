@@ -947,32 +947,6 @@ class Klarna
     }
 
     /**
-     * Sets the session id's for various device identification,
-     * behaviour identification software.
-     *
-     * <b>Available named session id's</b>:<br>
-     * string - dev_id_1<br>
-     * string - dev_id_2<br>
-     * string - dev_id_3<br>
-     * string - beh_id_1<br>
-     * string - beh_id_2<br>
-     * string - beh_id_3<br>
-     *
-     * @param string $name Session ID identifier, e.g. 'dev_id_1'.
-     * @param string $sid  Session ID.
-     *
-     * @throws KlarnaException
-     * @return void
-     */
-    public function setSessionID($name, $sid)
-    {
-        $this->_checkArgument($name, "name");
-        $this->_checkArgument($sid, "sid");
-
-        $this->sid[$name] = $sid;
-    }
-
-    /**
      * Sets the shipment information for the upcoming transaction.<br>
      *
      * Using this method is optional.
