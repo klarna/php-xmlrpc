@@ -13,7 +13,8 @@
     "minimum-stability": "stable",
     "require": {
         "ext-curl": "*",
-        "php": ">=5.2.16",
+        "ext-xml": "*",
+        "php": ">=5.4.0",
         "phpxmlrpc/phpxmlrpc": "~3.0"
     },
     "require-dev": {
