@@ -338,37 +338,11 @@ class Klarna
     private $_x_fwd;
 
     /**
-     * The storage class for PClasses.
-     *
-     * Use 'xml' for XMLStorage<br>
-     * Use 'mysql' for MySQLStorage<br>
-     * Use 'sql' for SQLStorage<br>
-     * Use 'json' for JSONStorage<br>
-     *
-     * @var string
-     */
-    protected $pcStorage;
-
-    /**
-     * The storage URI for PClasses.
-     *
-     * Use the absolute or relative URI to a file if
-     * {@link Klarna::$pcStorage} is set as 'xml' or 'json'.<br>
-     * Use a HTTP-auth similar URL if {@link Klarna::$pcStorage} is set
-     * as 'mysql', <br>
-     * e.g. user:passwd@addr:port/dbName.dbTable.<br>
-     * Or an associative array (recommended) {@see MySQLStorage}
-     *
-     * @var mixed
-     */
-    protected $pcURI;
-
-    /**
-     * PCStorage instance.
+     * PClass list.
      *
      * @ignore Do not show this in PHPDoc.
      *
-     * @var PCStorage
+     * @var PClass[]
      */
     protected $pclasses;
 
@@ -436,7 +410,7 @@ class Klarna
      */
     protected function init()
     {
-        $this->hasFields('eid', 'secret', 'mode', 'pcStorage', 'pcURI');
+        $this->hasFields('eid', 'secret', 'mode');
 
         if (!is_int($this->config['eid'])) {
             $this->config['eid'] = intval($this->config['eid']);
@@ -526,9 +500,6 @@ class Klarna
             //No 'debug' field ignore it...
         }
 
-        $this->pcStorage = $this->config['pcStorage'];
-        $this->pcURI = $this->config['pcURI'];
-
         // Default path to '/' if not set.
         if (!array_key_exists('path', $this->_url)) {
             $this->_url['path'] = '/';
@@ -549,18 +520,6 @@ class Klarna
     /**
      * Method of ease for setting common config fields.
      *
-     * The storage module for PClasses:<br>
-     * Use 'xml' for xmlstorage.class.php.<br>
-     * Use 'mysql' for mysqlstorage.class.php.<br>
-     * Use 'json' for jsonstorage.class.php.<br>
-     *
-     * The storage URI for PClasses:<br>
-     * Use the absolute or relative URI to a file if {@link Klarna::$pcStorage}
-     * is set as 'xml' or 'json'.<br>
-     * Use a HTTP-auth similar URL if {@link Klarna::$pcStorage} is set as
-     * mysql', e.g. user:passwd@addr:port/dbName.dbTable.
-     * Or an associative array (recommended) {@see MySQLStorage}
-     *
      * <b>Note</b>:<br>
      * This disables the config file storage.<br>
      *
@@ -570,8 +529,6 @@ class Klarna
      * @param int    $language  {@link KlarnaLanguage}
      * @param int    $currency  {@link KlarnaCurrency}
      * @param int    $mode      {@link Klarna::LIVE} or {@link Klarna::BETA}
-     * @param string $pcStorage PClass storage module.
-     * @param string $pcURI     PClass URI.
      * @param bool   $ssl       Whether HTTPS (HTTP over SSL) or HTTP is used.
      *
      * @see Klarna::setConfig()
@@ -582,8 +539,7 @@ class Klarna
      */
     public function config(
         $eid, $secret, $country, $language, $currency,
-        $mode = Klarna::LIVE, $pcStorage = 'json', $pcURI = 'pclasses.json',
-        $ssl = true
+        $mode = Klarna::LIVE, $ssl = true
     ) {
         try {
             KlarnaConfig::$store = false;
@@ -596,8 +552,6 @@ class Klarna
             $this->config['currency'] = $currency;
             $this->config['mode'] = $mode;
             $this->config['ssl'] = $ssl;
-            $this->config['pcStorage'] = $pcStorage;
-            $this->config['pcURI'] = $pcURI;
 
             $this->init();
         } catch(Exception $e) {
@@ -1949,7 +1903,8 @@ class Klarna
             $this->_language,
             $this->_eid,
             $digestSecret,
-            $encoding, $pclass,
+            $encoding,
+            $pclass,
             $this->goodsList,
             $this->comment,
             $this->shipInfo,
@@ -3233,50 +3188,35 @@ class Klarna
     }
 
     /**
-     * Returns the configured PCStorage object.
+     * Get the PClasses from Klarna Online.<br>
+     * You are only allowed to call this once, or once per update of PClasses
+     * in KO.<br>
      *
-     * @throws Exception|KlarnaException
-     * @return PCStorage
+     * <b>Note</b>:<br>
+     * You should store these in a DB of choice for later use.
+     *
+     * @param string|int $country  {@link KlarnaCountry Country} constant,
+     *                             or two letter code.
+     * @param mixed      $language {@link KlarnaLanguage Language} constant,
+     *                             or two letter code.
+     * @param mixed      $currency {@link KlarnaCurrency Currency} constant,
+     *                             or three letter code.
+     *
+     * @throws KlarnaException
+     * @return KlarnaPClass[] A list of pclasses.
      */
-    public function getPCStorage()
-    {
-        if (isset($this->pclasses)) {
-            return $this->pclasses;
-        }
+    public function getPClasses($country = null, $language = null, $currency = null) {
+        extract(
+            $this->getLocale($country, $language, $currency),
+            EXTR_OVERWRITE
+        );
 
-        $storage = $this->pcStorage;
-        if ($storage === 'json' || $storage === 'xml' || $storage === 'sql') {
-            $storage = strtoupper($storage);
-        } else if ($storage === 'mysql') {
-            $storage = 'MySQL';
-        }
+        $this->_checkConfig();
 
-        $className = $storage . 'Storage';
-        $storage = new $className;
-
-        if (!($storage instanceof PCStorage)) {
-            throw new Klarna_PCStorageInvalidException(
-                $className, $pclassStorage
-            );
-        }
-        return $storage;
-    }
-
-    /**
-     * Fetch pclasses
-     *
-     * @param PCStorage $storage  PClass Storage
-     * @param int       $country  KlarnaCountry constant
-     * @param int       $language KlarnaLanguage constant
-     * @param int       $currency KlarnaCurrency constant
-     *
-     * @return void
-     */
-    private function _fetchPClasses($storage, $country, $language, $currency)
-    {
         $digestSecret = self::digest(
             $this->_eid . ":" . $currency . ":" . $this->_secret
         );
+
         $paramList = array(
             $this->_eid,
             $currency,
@@ -3291,203 +3231,26 @@ class Klarna
 
         self::printDebug('get_pclasses result', $result);
 
-        foreach ($result as &$pclass) {
-            //numeric htmlentities
-            $pclass[1] = Klarna::num_htmlentities($pclass[1]);
+        $pclasses = array();
 
-            //Below values are in "cents", fix them.
-            $pclass[3] /= 100; //divide start fee with 100
-            $pclass[4] /= 100; //divide invoice fee with 100
-            $pclass[5] /= 100; //divide interest rate with 100
-            $pclass[6] /= 100; //divide min amount with 100
+        foreach ($result as $data) {
+            $pclass = new KlarnaPClass();
+            $pclass->setEid($this->_eid);
+            $pclass->setId($data[0]);
+            $pclass->setDescription(Klarna::num_htmlentities($data[1]));
+            $pclass->setMonths($data[2]);
+            $pclass->setStartFee($data[3] / 100);
+            $pclass->setInvoiceFee($data[4] / 100);
+            $pclass->setInterestRate($data[5] / 100);
+            $pclass->setMinAmount($data[6] / 100);
+            $pclass->setCountry($data[7]);
+            $pclass->setType($data[8]);
+            $pclass->setExpire(strtotime($data[9]));
 
-            if ($pclass[9] != '-') {
-                //unix timestamp instead of yyyy-mm-dd
-                $pclass[9] = strtotime($pclass[9]);
-            }
-
-            //Associate the PClass with this estore.
-            array_unshift($pclass, $this->_eid);
-
-            $storage->addPClass(new KlarnaPClass($pclass));
-        }
-    }
-
-    /**
-     * Fetches the PClasses from Klarna Online.<br>
-     * Removes the cached/stored pclasses and updates.<br>
-     * You are only allowed to call this once, or once per update of PClasses
-     * in KO.<br>
-     *
-     * <b>Note</b>:<br>
-     * If language and/or currency is null, then they will be set to mirror
-     * the specified country.<br/>
-     * Short codes like DE, SV or EUR can also be used instead of the constants.
-     *
-     * @param string|int $country  {@link KlarnaCountry Country} constant,
-     *                             or two letter code.
-     * @param mixed      $language {@link KlarnaLanguage Language} constant,
-     *                             or two letter code.
-     * @param mixed      $currency {@link KlarnaCurrency Currency} constant,
-     *                             or three letter code.
-     *
-     * @throws KlarnaException
-     * @return void
-     */
-    public function fetchPClasses(
-        $country = null, $language = null, $currency = null
-    ) {
-        extract(
-            $this->getLocale($country, $language, $currency),
-            EXTR_OVERWRITE
-        );
-
-        $this->_checkConfig();
-
-        $pclasses = $this->getPCStorage();
-        try {
-            //Attempt to load previously stored pclasses, so they aren't
-            // accidentially removed.
-            $pclasses->load($this->pcURI);
-        }
-        catch(Exception $e) {
-            self::printDebug('load pclasses', $e->getMessage());
+            $pclasses[] = $pclass;
         }
 
-        $this->_fetchPClasses($pclasses, $country, $language, $currency);
-
-        $pclasses->save($this->pcURI);
-        $this->pclasses = $pclasses;
-    }
-
-    /**
-     * Removes the stored PClasses, if you need to update them.
-     *
-     * @throws KlarnaException
-     * @return void
-     */
-    public function clearPClasses()
-    {
-        $this->_checkConfig();
-
-        $pclasses = $this->getPCStorage();
-        $pclasses->clear($this->pcURI);
-    }
-
-    /**
-     * Retrieves the specified PClasses.
-     *
-     * <b>Type can be</b>:<br>
-     * {@link KlarnaPClass::CAMPAIGN}<br>
-     * {@link KlarnaPClass::ACCOUNT}<br>
-     * {@link KlarnaPClass::SPECIAL}<br>
-     * {@link KlarnaPClass::FIXED}<br>
-     * {@link KlarnaPClass::DELAY}<br>
-     * {@link KlarnaPClass::MOBILE}<br>
-     *
-     * @param int $type PClass type identifier.
-     *
-     * @throws KlarnaException
-     * @return array An array of PClasses. [KlarnaPClass]
-     */
-    public function getPClasses($type = null)
-    {
-        $this->_checkConfig();
-
-        if (!$this->pclasses) {
-            $this->pclasses = $this->getPCStorage();
-            $this->pclasses->load($this->pcURI);
-        }
-        $tmp = $this->pclasses->getPClasses(
-            $this->_eid, $this->_country, $type
-        );
-        $this->sortPClasses($tmp[$this->_eid]);
-        return $tmp[$this->_eid];
-    }
-
-    /**
-     * Retrieve a flattened array of all pclasses stored in the configured
-     * pclass storage.
-     *
-     * @return array
-     */
-    public function getAllPClasses()
-    {
-        if (!$this->pclasses) {
-            $this->pclasses = $this->getPCStorage();
-            $this->pclasses->load($this->pcURI);
-        }
-        return $this->pclasses->getAllPClasses();
-    }
-
-    /**
-     * Returns the specified PClass.
-     *
-     * @param int $id The PClass ID.
-     *
-     * @return KlarnaPClass
-     */
-    public function getPClass($id)
-    {
-        if (!is_numeric($id)) {
-            throw new Klarna_InvalidTypeException('id', 'integer');
-        }
-
-        $this->_checkConfig();
-
-        if (!$this->pclasses || !($this->pclasses instanceof PCStorage)) {
-            $this->pclasses = $this->getPCStorage();
-            $this->pclasses->load($this->pcURI);
-        }
-        return $this->pclasses->getPClass(
-            intval($id), $this->_eid, $this->_country
-        );
-    }
-
-    /**
-     * Sorts the specified array of KlarnaPClasses.
-     *
-     * @param array $array An array of {@link KlarnaPClass PClasses}.
-     *
-     * @return void
-     */
-    public function sortPClasses(&$array)
-    {
-        if (!is_array($array)) {
-            //Input is not an array!
-            $array = array();
-            return;
-        }
-        //Sort pclasses array after natural sort (natcmp)
-        if (!function_exists('pcCmp')) {
-            /**
-             * Comparison function
-             *
-             * @param KlarnaPClass $a object 1
-             * @param KlarnaPClass $b object 2
-             *
-             * @return int
-             */
-            function pcCmp($a, $b)
-            {
-                if ($a->getDescription() == null
-                    && $b->getDescription() == null
-                ) {
-                    return 0;
-                } else if ($a->getDescription() == null) {
-                    return 1;
-                } else if ($b->getDescription() == null) {
-                    return -1;
-                } else if ($b->getType() === 2 && $a->getType() !== 2) {
-                    return 1;
-                } else if ($b->getType() !== 2 && $a->getType() === 2) {
-                    return -1;
-                }
-
-                return strnatcmp($a->getDescription(), $b->getDescription())*-1;
-            }
-        }
-        usort($array, "pcCmp");
+        return $pclasses;
     }
 
     /**
@@ -3500,13 +3263,14 @@ class Klarna
      * {@link KlarnaFlags::CHECKOUT_PAGE}<br>
      * {@link KlarnaFlags::PRODUCT_PAGE}<br>
      *
-     * @param float $sum   The product cost, or total sum of the cart.
-     * @param int   $flags Which type of page the info will be displayed on.
+     * @param float          $sum      The product cost, or total sum of the cart.
+     * @param int            $flags    Which type of page the info will be displayed on.
+     * @param KlarnaPClass[] $pclasses The list of pclasses to search in.
      *
      * @throws KlarnaException
      * @return KlarnaPClass or false if none was found.
      */
-    public function getCheapestPClass($sum, $flags)
+    public function getCheapestPClass($sum, $flags, $pclasses)
     {
         if (!is_numeric($sum)) {
             throw new Klarna_InvalidPriceException($sum);
@@ -3526,7 +3290,7 @@ class Klarna
 
         $lowest_pp = $lowest = false;
 
-        foreach ($this->getPClasses() as $pclass) {
+        foreach ($pclasses as $pclass) {
             $lowest_payment = KlarnaCalc::get_lowest_payment_for_account(
                 $pclass->getCountry()
             );
@@ -4334,22 +4098,6 @@ class Klarna
         if (!is_array($this->goodsList) || empty($this->goodsList)) {
             throw new Klarna_MissingGoodslistException;
         }
-    }
-
-    /**
-     * Set the pcStorage method used for this instance
-     *
-     * @param PCStorage $pcStorage PCStorage implementation
-     *
-     * @return void
-     */
-    public function setPCStorage($pcStorage)
-    {
-        if (!($pcStorage instanceof PCStorage)) {
-            throw new Klarna_InvalidTypeException('pcStorage', 'PCStorage');
-        }
-        $this->pcStorage = $pcStorage->getName();
-        $this->pclasses = $pcStorage;
     }
 
     /**

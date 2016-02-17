@@ -10,19 +10,16 @@ $k->config(
     KlarnaCountry::SE,    // Purchase country
     KlarnaLanguage::SV,   // Purchase language
     KlarnaCurrency::SEK,  // Purchase currency
-    Klarna::BETA,         // Server
-    'json',               // PClass storage
-    './pclasses.json'     // PClass storage URI path
+    Klarna::BETA          // Server
 );
 
 try {
-    $k->fetchPClasses();
-
-    $pclasses = $k->getAllPClasses();
+    $pclasses = $k->getPClasses();
 
     // $pclasses is now a list of KlarnaPClass instances.
+    // Store them in your favourite DB for later use.
 
-    echo "OK\n";
+    var_dump($pclasses);
 } catch(Exception $e) {
     echo "{$e->getMessage()} (#{$e->getCode()})\n";
 }

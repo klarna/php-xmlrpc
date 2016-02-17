@@ -10,9 +10,7 @@ $k->config(
     KlarnaCountry::SE,    // Purchase country
     KlarnaLanguage::SV,   // Purchase language
     KlarnaCurrency::SEK,  // Purchase currency
-    Klarna::BETA,         // Server
-    'json',               // PClass storage
-    './pclasses.json'     // PClass storage URI path
+    Klarna::BETA          // Server
 );
 
 try {

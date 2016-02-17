@@ -9,9 +9,7 @@ $k->config(
     KlarnaCountry::SE,    // Purchase country
     KlarnaLanguage::SV,   // Purchase language
     KlarnaCurrency::SEK,  // Purchase currency
-    Klarna::BETA,         // Server
-    'json',               // PClass storage
-    './pclasses.json'  // PClass storage URI path
+    Klarna::BETA          // Server
 );
 
 
@@ -50,12 +48,19 @@ $addr = new KlarnaAddr(
 $k->setAddress(KlarnaFlags::IS_BILLING, $addr);
 $k->setAddress(KlarnaFlags::IS_SHIPPING, $addr);
 
+// PClass related methods
+
+$pclass1 = new KlarnaPClass();
+$pclass1->setId(1);
+
+$pclass2 = new KlarnaPClass();
+$pclass2->setId(2);
+
 
 // Method: calcMonthlyCost
 
 $amount = 149.99;
-$pclass = $k->getCheapestPClass($amount, KlarnaFlags::PRODUCT_PAGE);
-$value = null;
+$pclass = $k->getCheapestPClass($amount, KlarnaFlags::PRODUCT_PAGE, array($pclass1, $pclass2));
 if ($pclass) {
     $monthly = KlarnaCalc::calc_monthly_cost($amount, $pclass, KlarnaFlags::PRODUCT_PAGE);
 
@@ -65,11 +70,9 @@ if ($pclass) {
 
 // Method: totalCreditPurchaseCost
 
-$id = 100;
-$pclass = $k->getPClass($id);
 $amount = 100.50;
 if ($pclass) {
-    $total = KlarnaCalc::total_credit_purchase_cost($amount, $pclass, KlarnaFlags::CHECKOUT_PAGE);
+    $total = KlarnaCalc::total_credit_purchase_cost($amount, $pclass1, KlarnaFlags::CHECKOUT_PAGE);
 
     echo "total credit purchase cost: {$total}\n";
 }
@@ -77,20 +80,12 @@ if ($pclass) {
 
 // Method: calcAPR
 
-$id = 100;
-$pclass = $k->getPClass($id);
 $amount = 105.50;
 if ($pclass) {
-    $apr = KlarnaCalc::calc_apr($amount, $pclass, KlarnaFlags::CHECKOUT_PAGE);
+    $apr = KlarnaCalc::calc_apr($amount, $pclass2, KlarnaFlags::CHECKOUT_PAGE);
 
     echo "apr: {$apr}\n";
 }
 
-
-// Method: getPClasses
-
-// Optional argument PClass type to filter by.
-// E.g. KlarnaPClass::CAMPAIGN
-$pclasses = $k->getPClasses();
 
 // $pclasses is now a list of KlarnaPClass instances.
