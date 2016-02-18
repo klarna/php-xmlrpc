@@ -205,88 +205,6 @@ class KlarnaPClass
     protected $eid;
 
     /**
-     * Class constructor
-     *
-     * The optional array argument can be:
-     * array (
-     *   0 = eid (this is created in the API)
-     *   1 = id number
-     *   2 = description
-     *   3 = amount of months for part payment
-     *   4 = start fee
-     *   5 = invoice fee
-     *   6 = interest rate
-     *   7 = minimum purchase amount for pclass
-     *   8 = country
-     *   9 = type
-     *     (This is used to determine which pclass-id is an account and
-     *     a campaign, 0 = campaign, 1 = account, 2 = special campaign
-     *     i.e. x-mas campaign)
-     *  10 = expire date
-     *
-     * @param null|array $arr Associative or numeric array of PClass data.
-     */
-    public function __construct($arr = null)
-    {
-        if (!is_array($arr) || count($arr) < 11) {
-            return;
-        }
-
-        foreach ($arr as $key => $val) {
-            switch($key) {
-            case "0":
-            case "eid":
-                $this->setEid($val);
-                break;
-            case "1":
-            case "id":
-                $this->setId($val);
-                break;
-            case "2":
-            case "desc":
-            case "description":
-                $this->setDescription($val);
-                break;
-            case "3":
-            case "months":
-                $this->setMonths($val);
-                break;
-            case "4":
-            case "startfee":
-                $this->setStartFee($val);
-                break;
-            case "5":
-            case "invoicefee":
-                $this->setInvoiceFee($val);
-                break;
-            case "6":
-            case "interestrate":
-                $this->setInterestRate($val);
-                break;
-            case "7":
-            case "minamount":
-                $this->setMinAmount($val);
-                break;
-            case "8":
-            case "country":
-                $this->setCountry($val);
-                break;
-            case "9":
-            case "type":
-                $this->setType($val);
-                break;
-            case "10":
-            case "expire":
-                $this->setExpire($val);
-                break;
-            default:
-                //Array index not supported.
-                break;
-            }
-        }
-    }
-
-    /**
      * Returns an associative array mirroring this PClass.
      *
      * @return array
@@ -294,17 +212,17 @@ class KlarnaPClass
     public function toArray()
     {
         return array(
-                'eid'          => $this->eid,
-                'id'           => $this->id,
-                'description'  => $this->description,
-                'months'       => $this->months,
-                'startfee'     => $this->startFee,
-                'invoicefee'   => $this->invoiceFee,
-                'interestrate' => $this->interestRate,
-                'minamount'    => $this->minAmount,
-                'country'      => $this->country,
-                'type'         => $this->type,
-                'expire'       => $this->expire
+            'eid'          => $this->eid,
+            'id'           => $this->id,
+            'description'  => $this->description,
+            'months'       => $this->months,
+            'startfee'     => $this->startFee,
+            'invoicefee'   => $this->invoiceFee,
+            'interestrate' => $this->interestRate,
+            'minamount'    => $this->minAmount,
+            'country'      => $this->country,
+            'type'         => $this->type,
+            'expire'       => $this->expire
         );
     }
 
@@ -501,9 +419,10 @@ class KlarnaPClass
     }
 
     /**
-     * Returns the valid until/expire date unix timestamp.
+     * Returns the valid until/expire date unix timestamp or false if there's
+     * no expiry.
      *
-     * @return int
+     * @return int|bool
      */
     public function getExpire()
     {
@@ -513,7 +432,7 @@ class KlarnaPClass
     /**
      * Sets the valid until/expire date unix timestamp.
      *
-     * @param int $expire unix timestamp for expire
+     * @param int|bool $expire unix timestamp for expire or false if no expiry.
      *
      * @return void
      */

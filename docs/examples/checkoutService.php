@@ -7,8 +7,6 @@ $config = new KlarnaConfig();
 
 // Default required options but not used by the checkout service.
 $config['mode'] = Klarna::BETA;
-$config['pcStorage'] = 'json';
-$config['pcURI'] = './pclasses.json';
 
 // Configuration needed for the checkout service
 $config['eid'] = 0;
