@@ -4,32 +4,47 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "50a263cc5ebeae691cea137a613c9877",
-    "content-hash": "71e5ea9451c39651b99c2c0d00f82464",
+    "hash": "59675196296a3a3a5b8aa962038b66f1",
+    "content-hash": "e7ec5f64d0f461abca23dc489e9d85eb",
     "packages": [
         {
             "name": "phpxmlrpc/phpxmlrpc",
-            "version": "3.0.1",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gggeek/phpxmlrpc.git",
-                "reference": "490862c33009397151ac39c811b6ee8e24689692"
+                "reference": "679eacd661962f353a809ab66e83a86233f28bcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gggeek/phpxmlrpc/zipball/490862c33009397151ac39c811b6ee8e24689692",
-                "reference": "490862c33009397151ac39c811b6ee8e24689692",
+                "url": "https://api.github.com/repos/gggeek/phpxmlrpc/zipball/679eacd661962f353a809ab66e83a86233f28bcc",
+                "reference": "679eacd661962f353a809ab66e83a86233f28bcc",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.1.0"
+                "ext-xml": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "docbook/docbook-xsl": "~1.78",
+                "ext-curl": "*",
+                "ext-mbstring": "*",
+                "indeyets/pake": "~1.99",
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phpunit/phpunit": ">=4.0.0",
+                "phpunit/phpunit-selenium": "*"
+            },
+            "suggest": {
+                "ext-curl": "Needed for HTTPS and HTTP 1.1 support, NTLM Auth etc...",
+                "ext-mbstring": "Needed to allow reception of requests/responses in character sets other than ASCII,LATIN-1,UTF-8",
+                "ext-zlib": "Needed for sending compressed requests and receiving compressed responses, if cURL is not available"
             },
             "type": "library",
             "autoload": {
-                "classmap": [
-                    "lib/xmlrpc.inc",
-                    "lib/xmlrpcs.inc"
-                ]
+                "psr-4": {
+                    "PhpXmlRpc\\": "src/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -41,7 +56,7 @@
                 "webservices",
                 "xmlrpc"
             ],
-            "time": "2015-04-19 00:17:47"
+            "time": "2016-01-20 23:28:09"
         }
     ],
     "packages-dev": [
@@ -589,16 +604,16 @@
         },
         {
             "name": "latte/latte",
-            "version": "v2.3.9",
+            "version": "v2.3.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/latte.git",
-                "reference": "86ec0a1f70785d2b3a975958ba9ced4f4ae8a2e1"
+                "reference": "84d9f6d2541a7b3ca8f9c79d968c43d94643f0c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/latte/zipball/86ec0a1f70785d2b3a975958ba9ced4f4ae8a2e1",
-                "reference": "86ec0a1f70785d2b3a975958ba9ced4f4ae8a2e1",
+                "url": "https://api.github.com/repos/nette/latte/zipball/84d9f6d2541a7b3ca8f9c79d968c43d94643f0c5",
+                "reference": "84d9f6d2541a7b3ca8f9c79d968c43d94643f0c5",
                 "shasum": ""
             },
             "require": {
@@ -640,7 +655,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-01-20 00:57:22"
+            "time": "2016-02-19 21:52:43"
         },
         {
             "name": "michelf/php-markdown",
@@ -695,16 +710,16 @@
         },
         {
             "name": "nette/application",
-            "version": "v2.3.10",
+            "version": "v2.3.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/application.git",
-                "reference": "6f3447b5fcf4ae7f78fd90f354b5aba2a68c8f02"
+                "reference": "2dd99fc2711812d4f538d4d3f74a31a4aa695e35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/application/zipball/6f3447b5fcf4ae7f78fd90f354b5aba2a68c8f02",
-                "reference": "6f3447b5fcf4ae7f78fd90f354b5aba2a68c8f02",
+                "url": "https://api.github.com/repos/nette/application/zipball/2dd99fc2711812d4f538d4d3f74a31a4aa695e35",
+                "reference": "2dd99fc2711812d4f538d4d3f74a31a4aa695e35",
                 "shasum": ""
             },
             "require": {
@@ -753,7 +768,7 @@
             ],
             "description": "Nette Application MVC Component",
             "homepage": "https://nette.org",
-            "time": "2016-02-07 17:39:57"
+            "time": "2016-02-09 11:42:38"
         },
         {
             "name": "nette/bootstrap",
@@ -823,16 +838,16 @@
         },
         {
             "name": "nette/caching",
-            "version": "v2.4.3",
+            "version": "v2.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/caching.git",
-                "reference": "f60c1767fe5a4b2b45edf2a98cf9dc70c15ea1b1"
+                "reference": "9bcb68939f4387a89dc7be0fb5dcaae98b87976b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/caching/zipball/f60c1767fe5a4b2b45edf2a98cf9dc70c15ea1b1",
-                "reference": "f60c1767fe5a4b2b45edf2a98cf9dc70c15ea1b1",
+                "url": "https://api.github.com/repos/nette/caching/zipball/9bcb68939f4387a89dc7be0fb5dcaae98b87976b",
+                "reference": "9bcb68939f4387a89dc7be0fb5dcaae98b87976b",
                 "shasum": ""
             },
             "require": {
@@ -877,7 +892,7 @@
             ],
             "description": "Nette Caching Component",
             "homepage": "https://nette.org",
-            "time": "2015-11-29 21:35:25"
+            "time": "2016-02-22 01:58:50"
         },
         {
             "name": "nette/component-model",
@@ -931,16 +946,16 @@
         },
         {
             "name": "nette/di",
-            "version": "v2.3.8",
+            "version": "v2.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/di.git",
-                "reference": "d8778100be121937b6e9fba6eadff5691744d727"
+                "reference": "84520e7a1e4f0370ae52a3cfda09c0a2acc5daf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/di/zipball/d8778100be121937b6e9fba6eadff5691744d727",
-                "reference": "d8778100be121937b6e9fba6eadff5691744d727",
+                "url": "https://api.github.com/repos/nette/di/zipball/84520e7a1e4f0370ae52a3cfda09c0a2acc5daf7",
+                "reference": "84520e7a1e4f0370ae52a3cfda09c0a2acc5daf7",
                 "shasum": ""
             },
             "require": {
@@ -979,7 +994,7 @@
             ],
             "description": "Nette Dependency Injection Component",
             "homepage": "https://nette.org",
-            "time": "2016-01-20 02:58:28"
+            "time": "2016-02-08 22:57:43"
         },
         {
             "name": "nette/finder",
@@ -1725,16 +1740,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.3.8",
+            "version": "v2.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "9aa0ade4444def3178aa808255ea326b9e3da9f2"
+                "reference": "3db887daa2a7a120189da73e9cf8ff415adfd70e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/9aa0ade4444def3178aa808255ea326b9e3da9f2",
-                "reference": "9aa0ade4444def3178aa808255ea326b9e3da9f2",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/3db887daa2a7a120189da73e9cf8ff415adfd70e",
+                "reference": "3db887daa2a7a120189da73e9cf8ff415adfd70e",
                 "shasum": ""
             },
             "require": {
@@ -1776,7 +1791,7 @@
                 "debugger",
                 "nette"
             ],
-            "time": "2016-01-20 03:14:47"
+            "time": "2016-02-22 01:27:57"
         }
     ],
     "aliases": [],
