@@ -16,6 +16,8 @@
  */
 namespace Klarna\XMLRPC;
 
+use PhpXmlRpc;
+
 if (!defined('ENT_HTML401')) {
     define('ENT_HTML401', 0);
 }
@@ -81,11 +83,11 @@ class Klarna
     protected $ssl = false;
 
     /**
-     * An object of xmlrpc_client, used to communicate with Klarna.
+     * An object of PhpXmlRpc\Client, used to communicate with Klarna.
      *
-     * @link http://phpxmlrpc.sourceforge.net/
+     * @link https://packagist.org/packages/phpxmlrpc/phpxmlrpc
      *
-     * @var xmlrpc_client
+     * @var PhpXmlRpc\Client
      */
     protected $xmlrpc;
 
@@ -485,7 +487,7 @@ class Klarna
             $this->_url['path'] = '/';
         }
 
-        $this->xmlrpc = new \xmlrpc_client(
+        $this->xmlrpc = new PhpXmlRpc\Client(
             $this->_url['path'],
             $this->_url['host'],
             $this->_url['port'],
@@ -3424,6 +3426,9 @@ class Klarna
         if (self::$disableXMLRPC) {
             return true;
         }
+
+        $encoder = new PhpXmlRpc\Encoder();
+
         try {
             /*
              * Disable verifypeer for CURL, so below error is avoided.
@@ -3437,7 +3442,7 @@ class Klarna
             $timestart = microtime(true);
 
             //Create the XMLRPC message.
-            $msg = new \xmlrpcmsg($method);
+            $msg = new PhpXmlRpc\Request($method);
             $params = array_merge(
                 array(
                     $this->PROTO, $this->VERSION,
@@ -3445,10 +3450,9 @@ class Klarna
                 $array
             );
 
-            $msg = new \xmlrpcmsg($method);
             foreach ($params as $p) {
                 if (!$msg->addParam(
-                    php_xmlrpc_encode($p, array('extension_api'))
+                    $encoder->encode($p, array('extension_api'))
                 )
                 ) {
                     throw new Exception\KlarnaException(
@@ -3476,7 +3480,7 @@ class Klarna
                 throw new Exception\KlarnaException($xmlrpcresp->faultString(), $status);
             }
 
-            return php_xmlrpc_decode($xmlrpcresp->value());
+            return $encoder->decode($xmlrpcresp->value());
         } catch (\Exception\KlarnaException $e) {
             //Otherwise it is caught below, and rethrown.
             throw $e;
