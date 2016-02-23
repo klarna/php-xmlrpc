@@ -3439,8 +3439,6 @@ class Klarna
              */
             $this->xmlrpc->verifypeer = false;
 
-            $timestart = microtime(true);
-
             //Create the XMLRPC message.
             $msg = new PhpXmlRpc\Request($method);
             $params = array_merge(
@@ -3463,16 +3461,11 @@ class Klarna
             }
 
             //Send the message.
-            $selectDateTime = microtime(true);
             if (self::$xmlrpcDebug) {
                 $this->xmlrpc->setDebug(2);
             }
-            $xmlrpcresp = $this->xmlrpc->send($msg);
 
-            //Calculate time and selectTime.
-            $timeend = microtime(true);
-            $time = (int) (($selectDateTime - $timestart) * 1000);
-            $selectTime = (int) (($timeend - $timestart) * 1000);
+            $xmlrpcresp = $this->xmlrpc->send($msg);
 
             $status = $xmlrpcresp->faultCode();
 
