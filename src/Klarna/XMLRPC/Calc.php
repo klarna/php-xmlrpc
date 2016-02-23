@@ -371,25 +371,22 @@ class Calc
      * @param int    $flags  Checkout or Product page.
      * @param int    $free   Number of free months.
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return float APR in %
      */
-    public static function calc_apr($sum, $pclass, $flags, $free = 0)
+    public static function calc_apr($sum, PClass $pclass, $flags, $free = 0)
     {
         if (!is_numeric($sum)) {
-            throw new Exception\InvalidTypeException('sum', 'numeric');
+            throw new \InvalidArgumentException('sum must be numeric');
         }
         if (is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
         }
 
-        if (!($pclass instanceof PClass)) {
-            throw new Exception\InvalidTypeException('pclass', 'PClass');
-        }
-
         if (!is_numeric($free)) {
-            throw new Exception\InvalidTypeException('free', 'integer');
+            throw new \InvalidArgumentException('free must be an integer');
         }
 
         if (is_numeric($free) && !is_int($free)) {
@@ -397,9 +394,8 @@ class Calc
         }
 
         if ($free < 0) {
-            throw new Exception\KlarnaException(
-                'Error in '.__METHOD__.
-                ': Number of free months must be positive or zero!'
+            throw new \InvalidArgumentException(
+                'Number of free months must be positive or zero!'
             );
         }
 
@@ -415,9 +411,8 @@ class Calc
                 )
             )
         ) {
-            throw new Exception\InvalidTypeException(
-                'flags',
-                Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
+            throw new \InvalidArgumentException(
+                'Expected $flags to be '.Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
             );
         }
 
@@ -463,15 +458,15 @@ class Calc
                     2
                 );
             case PClass::SPECIAL:
-                throw new Exception\PClassException(
+                throw new \RuntimeException(
                     'Method is not available for SPECIAL pclasses'
                 );
             case PClass::FIXED:
-                throw new Exception\PClassException(
+                throw new \RuntimeException(
                     'Method is not available for FIXED pclasses'
                 );
             default:
-                throw new Exception\PClassException(
+                throw new \RuntimeException(
                     'Unknown PClass type! ('.$type.')'
                 );
         }
@@ -489,22 +484,18 @@ class Calc
      * @param PClass $pclass PClass used to calculate total credit cost.
      * @param int    $flags  Checkout or Product page.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      *
      * @return float Total credit purchase cost.
      */
-    public static function total_credit_purchase_cost($sum, $pclass, $flags)
+    public static function total_credit_purchase_cost($sum, PClass $pclass, $flags)
     {
         if (!is_numeric($sum)) {
-            throw new Exception\InvalidTypeException('sum', 'numeric');
+            throw new \InvalidArgumentException('Expected $sum to be numeric');
         }
 
         if (is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
             $sum = floatval($sum);
-        }
-
-        if (!($pclass instanceof PClass)) {
-            throw new Exception\InvalidTypeException('pclass', 'PClass');
         }
 
         if (is_numeric($flags) && !is_int($flags)) {
@@ -519,9 +510,8 @@ class Calc
                 )
             )
         ) {
-            throw new Exception\InvalidTypeException(
-                'flags',
-                Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
+            throw new \InvalidArgumentException(
+                'Expected $flags to be '.Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
             );
         }
 
@@ -564,14 +554,14 @@ class Calc
      * @param PClass $pclass PClass used to calculate monthly cost.
      * @param int    $flags  Checkout or product page.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      *
      * @return float The monthly cost.
      */
-    public static function calc_monthly_cost($sum, $pclass, $flags)
+    public static function calc_monthly_cost($sum, PClass $pclass, $flags)
     {
         if (!is_numeric($sum)) {
-            throw new Exception\InvalidTypeException('sum', 'numeric');
+            throw new \InvalidArgumentException('Expected $sum to be numeric');
         }
 
         if (is_numeric($sum) && (!is_int($sum) || !is_float($sum))) {
@@ -579,7 +569,7 @@ class Calc
         }
 
         if (!($pclass instanceof PClass)) {
-            throw new Exception\InvalidTypeException('pclass', 'PClass');
+            throw new \InvalidArgumentException('Expected $pclass to be a PClass');
         }
 
         if (is_numeric($flags) && !is_int($flags)) {
@@ -594,9 +584,8 @@ class Calc
                 )
             )
         ) {
-            throw new Exception\InvalidTypeException(
-                'flags',
-                Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
+            throw new \InvalidArgumentException(
+                'Expected $flags to be '.Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
             );
         }
 
@@ -641,7 +630,7 @@ class Calc
             case 'NL':
                 return 5.0;
             default:
-                throw new Exception\KlarnaException("Invalid country {$country}");
+                throw new \RuntimeException("Invalid country {{$country}}");
         }
     }
 
