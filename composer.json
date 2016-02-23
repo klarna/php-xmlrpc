@@ -22,7 +22,7 @@
         "klarna/apigen-theme": "~1.0"
     },
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-4": { "": "src/" }
     },
     "scripts": {
         "zip": "composer install --prefer-dist --optimize-autoloader --no-dev && composer archive --format=zip",
