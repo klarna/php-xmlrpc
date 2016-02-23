@@ -3430,15 +3430,6 @@ class Klarna
         $encoder = new PhpXmlRpc\Encoder();
 
         try {
-            /*
-             * Disable verifypeer for CURL, so below error is avoided.
-             * CURL error: SSL certificate problem, verify that the CA
-             * cert is OK.
-             * Details: error:14090086:SSL
-             * routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed (#8)
-             */
-            $this->xmlrpc->verifypeer = false;
-
             //Create the XMLRPC message.
             $msg = new PhpXmlRpc\Request($method);
             $params = array_merge(
