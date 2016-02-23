@@ -16,6 +16,9 @@
  */
 namespace Klarna\XMLRPC;
 
+use PhpXmlRpc;
+use PhpXmlRpc\Helper\Charset;
+
 if (!defined('ENT_HTML401')) {
     define('ENT_HTML401', 0);
 }
@@ -81,11 +84,11 @@ class Klarna
     protected $ssl = false;
 
     /**
-     * An object of xmlrpc_client, used to communicate with Klarna.
+     * An object of PhpXmlRpc\Client, used to communicate with Klarna.
      *
-     * @link http://phpxmlrpc.sourceforge.net/
+     * @link https://packagist.org/packages/phpxmlrpc/phpxmlrpc
      *
-     * @var xmlrpc_client
+     * @var PhpXmlRpc\Client
      */
     protected $xmlrpc;
 
@@ -485,7 +488,7 @@ class Klarna
             $this->_url['path'] = '/';
         }
 
-        $this->xmlrpc = new \xmlrpc_client(
+        $this->xmlrpc = new PhpXmlRpc\Client(
             $this->_url['path'],
             $this->_url['host'],
             $this->_url['port'],
@@ -3316,12 +3319,13 @@ class Klarna
         self::printDebug('get_pclasses result', $result);
 
         $pclasses = array();
+        $charset = Charset::instance();
 
         foreach ($result as $data) {
             $pclass = new PClass();
             $pclass->setEid($this->_eid);
             $pclass->setId($data[0]);
-            $pclass->setDescription(self::num_htmlentities($data[1]));
+            $pclass->setDescription($charset->encodeEntities($data[1], '', 'ISO-8859-1'));
             $pclass->setMonths($data[2]);
             $pclass->setStartFee($data[3] / 100);
             $pclass->setInvoiceFee($data[4] / 100);
@@ -3424,20 +3428,12 @@ class Klarna
         if (self::$disableXMLRPC) {
             return true;
         }
+
+        $encoder = new PhpXmlRpc\Encoder();
+
         try {
-            /*
-             * Disable verifypeer for CURL, so below error is avoided.
-             * CURL error: SSL certificate problem, verify that the CA
-             * cert is OK.
-             * Details: error:14090086:SSL
-             * routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed (#8)
-             */
-            $this->xmlrpc->verifypeer = false;
-
-            $timestart = microtime(true);
-
             //Create the XMLRPC message.
-            $msg = new \xmlrpcmsg($method);
+            $msg = new PhpXmlRpc\Request($method);
             $params = array_merge(
                 array(
                     $this->PROTO, $this->VERSION,
@@ -3445,10 +3441,9 @@ class Klarna
                 $array
             );
 
-            $msg = new \xmlrpcmsg($method);
             foreach ($params as $p) {
                 if (!$msg->addParam(
-                    php_xmlrpc_encode($p, array('extension_api'))
+                    $encoder->encode($p, array('extension_api'))
                 )
                 ) {
                     throw new Exception\KlarnaException(
@@ -3459,16 +3454,11 @@ class Klarna
             }
 
             //Send the message.
-            $selectDateTime = microtime(true);
             if (self::$xmlrpcDebug) {
                 $this->xmlrpc->setDebug(2);
             }
-            $xmlrpcresp = $this->xmlrpc->send($msg);
 
-            //Calculate time and selectTime.
-            $timeend = microtime(true);
-            $time = (int) (($selectDateTime - $timestart) * 1000);
-            $selectTime = (int) (($timeend - $timestart) * 1000);
+            $xmlrpcresp = $this->xmlrpc->send($msg);
 
             $status = $xmlrpcresp->faultCode();
 
@@ -3476,7 +3466,7 @@ class Klarna
                 throw new Exception\KlarnaException($xmlrpcresp->faultString(), $status);
             }
 
-            return php_xmlrpc_decode($xmlrpcresp->value());
+            return $encoder->decode($xmlrpcresp->value());
         } catch (\Exception\KlarnaException $e) {
             //Otherwise it is caught below, and rethrown.
             throw $e;
@@ -3640,38 +3630,6 @@ class Klarna
         self::printDebug('digest() using hash', $hash);
 
         return base64_encode(pack('H*', hash($hash, $data)));
-    }
-
-    /**
-     * Converts special characters to numeric htmlentities.
-     *
-     * <b>Note</b>:<br>
-     * If supplied string is encoded with UTF-8, o umlaut ("ö") will become two
-     * HTML entities instead of one.
-     *
-     * @param string $str String to be converted.
-     *
-     * @return string String converted to numeric HTML entities.
-     */
-    public static function num_htmlentities($str)
-    {
-        $charset = 'ISO-8859-1';
-
-        if (!self::$htmlentities) {
-            self::$htmlentities = array();
-            $table = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, $charset);
-            foreach ($table as $char => $entity) {
-                self::$htmlentities[$entity] = '&#'.ord($char).';';
-            }
-        }
-
-        return str_replace(
-            array_keys(
-                self::$htmlentities
-            ),
-            self::$htmlentities,
-            htmlentities($str, ENT_COMPAT | ENT_HTML401, $charset)
-        );
     }
 
     /**
