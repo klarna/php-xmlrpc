@@ -17,6 +17,7 @@
 namespace Klarna\XMLRPC;
 
 use PhpXmlRpc;
+use PhpXmlRpc\Helper\Charset;
 
 if (!defined('ENT_HTML401')) {
     define('ENT_HTML401', 0);
@@ -3318,12 +3319,13 @@ class Klarna
         self::printDebug('get_pclasses result', $result);
 
         $pclasses = array();
+        $charset = Charset::instance();
 
         foreach ($result as $data) {
             $pclass = new PClass();
             $pclass->setEid($this->_eid);
             $pclass->setId($data[0]);
-            $pclass->setDescription(self::num_htmlentities($data[1]));
+            $pclass->setDescription($charset->encodeEntities($data[1], '', 'ISO-8859-1'));
             $pclass->setMonths($data[2]);
             $pclass->setStartFee($data[3] / 100);
             $pclass->setInvoiceFee($data[4] / 100);
@@ -3628,38 +3630,6 @@ class Klarna
         self::printDebug('digest() using hash', $hash);
 
         return base64_encode(pack('H*', hash($hash, $data)));
-    }
-
-    /**
-     * Converts special characters to numeric htmlentities.
-     *
-     * <b>Note</b>:<br>
-     * If supplied string is encoded with UTF-8, o umlaut ("ö") will become two
-     * HTML entities instead of one.
-     *
-     * @param string $str String to be converted.
-     *
-     * @return string String converted to numeric HTML entities.
-     */
-    public static function num_htmlentities($str)
-    {
-        $charset = 'ISO-8859-1';
-
-        if (!self::$htmlentities) {
-            self::$htmlentities = array();
-            $table = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, $charset);
-            foreach ($table as $char => $entity) {
-                self::$htmlentities[$entity] = '&#'.ord($char).';';
-            }
-        }
-
-        return str_replace(
-            array_keys(
-                self::$htmlentities
-            ),
-            self::$htmlentities,
-            htmlentities($str, ENT_COMPAT | ENT_HTML401, $charset)
-        );
     }
 
     /**
