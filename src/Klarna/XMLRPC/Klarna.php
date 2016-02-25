@@ -55,7 +55,6 @@ class Klarna
 
     /**
      * URL/Address to the live Klarna Online server.
-     * Port used is 443 for SSL and 80 without.
      *
      * @var string
      */
@@ -70,18 +69,10 @@ class Klarna
 
     /**
      * URL/Address to the beta test Klarna Online server.
-     * Port used is 443 for SSL and 80 without.
      *
      * @var string
      */
     private static $_beta_addr = 'payment.testdrive.klarna.com';
-
-    /**
-     * Indicates whether the communications is over SSL or not.
-     *
-     * @var bool
-     */
-    protected $ssl = false;
 
     /**
      * An object of PhpXmlRpc\Client, used to communicate with Klarna.
@@ -446,26 +437,12 @@ class Klarna
             }
         } else {
             $this->_url['scheme'] = 'https';
+            $this->_url['port'] = 443;
 
             if ($this->mode === self::LIVE) {
                 $this->_url['host'] = self::$_live_addr;
             } else {
                 $this->_url['host'] = self::$_beta_addr;
-            }
-
-            if (isset($this->config['ssl'])
-                && (bool) $this->config['ssl'] === false
-            ) {
-                $this->_url['scheme'] = 'http';
-            }
-        }
-
-        // If no port has been specified, deduce from url scheme
-        if (!array_key_exists('port', $this->_url)) {
-            if ($this->_url['scheme'] === 'https') {
-                $this->_url['port'] = 443;
-            } else {
-                $this->_url['port'] = 80;
             }
         }
 
@@ -512,7 +489,6 @@ class Klarna
      * @param int    $language {@link Language}
      * @param int    $currency {@link Currency}
      * @param int    $mode     {@link Klarna::LIVE} or {@link Klarna::BETA}
-     * @param bool   $ssl      Whether HTTPS (HTTP over SSL) or HTTP is used.
      *
      * @see Klarna::setConfig()
      * @see Config
@@ -525,8 +501,7 @@ class Klarna
         $country,
         $language,
         $currency,
-        $mode = self::LIVE,
-        $ssl = true
+        $mode = self::LIVE
     ) {
         try {
             Config::$store = false;
@@ -538,7 +513,6 @@ class Klarna
             $this->config['language'] = $language;
             $this->config['currency'] = $currency;
             $this->config['mode'] = $mode;
-            $this->config['ssl'] = $ssl;
 
             $this->init();
         } catch (\Exception $e) {
@@ -1970,10 +1944,10 @@ class Klarna
         $result = $this->xmlrpc_call('extend_expiry_date', $paramList);
 
         // Default to server location as API does not include timezone info
-        $tz = new DateTimeZone('Europe/Stockholm');
+        $tz = new \DateTimeZone('Europe/Stockholm');
 
         // $result = '20150525T103631';
-        $date = DateTime::createFromFormat('Ymd\THis', $result, $tz);
+        $date = \DateTime::createFromFormat('Ymd\THis', $result, $tz);
         if ($date === false) {
             throw new Exception\KlarnaException(
                 "Could not parse result '{$result}' into date format 'Ymd\\This'"
@@ -4133,7 +4107,7 @@ class Klarna
     private function _checkGoodslist()
     {
         if (!is_array($this->goodsList) || empty($this->goodsList)) {
-            throw new \RuntimeException('No articles in goodslist');
+            throw new \RuntimeException('No articles in goods list');
         }
     }
 
