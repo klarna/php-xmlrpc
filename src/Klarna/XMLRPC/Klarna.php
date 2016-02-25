@@ -369,7 +369,7 @@ class Klarna
      * }
      * </code>
      *
-     * @throws Exception
+     * @throws \RuntimeException
      */
     protected function hasFields()
     {
@@ -381,8 +381,8 @@ class Klarna
             }
         }
         if (count($missingFields) > 0) {
-            throw new Exception\ConfigFieldMissingException(
-                implode(', ', $missingFields)
+            throw new \RuntimeException(
+                'Config missing fields: '.implode(', ', $missingFields)
             );
         }
     }
@@ -390,7 +390,7 @@ class Klarna
     /**
      * Initializes the Klarna object accordingly to the set config object.
      *
-     * @throws Exception\KlarnaException
+     * @throws \RuntimeException For invalid configuration
      */
     protected function init()
     {
@@ -401,7 +401,7 @@ class Klarna
         }
 
         if ($this->config['eid'] <= 0) {
-            throw new Exception\ConfigFieldMissingException('eid');
+            throw new \RuntimeException('Config field eid is not valid!');
         }
 
         if (!is_string($this->config['secret'])) {
@@ -409,7 +409,7 @@ class Klarna
         }
 
         if (strlen($this->config['secret']) == 0) {
-            throw new Exception\ConfigFieldMissingException('secret');
+            throw new \RuntimeException('Config field secret is not valid!');
         }
 
         //Set the shop id and secret.
@@ -442,7 +442,7 @@ class Klarna
                 $message = "Configuration value 'url' could not be parsed. ".
                     "(Was: '{$this->config['url']}')";
                 self::printDebug(__METHOD__, $message);
-                throw new InvalidArgumentException($message);
+                throw new \RuntimeException($message);
             }
         } else {
             $this->_url['scheme'] = 'https';
@@ -689,7 +689,7 @@ class Klarna
      *
      * @param string $code Two letter code, e.g. "se", "no", etc.
      *
-     * @throws Exception\KlarnaException
+     * @throws \RuntimeException
      *
      * @return int {@link Country Country} constant.
      */
@@ -697,7 +697,7 @@ class Klarna
     {
         $country = Country::fromCode($code);
         if ($country === null) {
-            throw new Exception\UnknownCountryException($code);
+            throw new \RuntimeException("Unknown country code: {$code}");
         }
 
         return $country;
@@ -758,7 +758,7 @@ class Klarna
      *
      * @param string $code Two letter code, e.g. "da", "de", etc.
      *
-     * @throws Exception\KlarnaException
+     * @throws \RuntimeException
      *
      * @return int {@link Language Language} constant.
      */
@@ -767,7 +767,7 @@ class Klarna
         $language = Language::fromCode($code);
 
         if ($language === null) {
-            throw new Exception\UnknownLanguageException($code);
+            throw new \RuntimeException("Unknown language code: {$code}");
         }
 
         return $language;
@@ -812,7 +812,7 @@ class Klarna
      *
      * @param string $code Two letter code, e.g. "dkk", "eur", etc.
      *
-     * @throws Exception\KlarnaException
+     * @throws \RuntimeException
      *
      * @return int {@link Currency Currency} constant.
      */
@@ -820,7 +820,7 @@ class Klarna
     {
         $currency = Currency::fromCode($code);
         if ($currency === null) {
-            throw new Exception\UnknownCurrencyException($code);
+            throw new \RuntimeException("Unknown currency code: {$code}");
         }
 
         return $currency;
@@ -1121,12 +1121,8 @@ class Klarna
      *
      * @throws Exception\KlarnaException
      */
-    public function setAddress($type, $addr)
+    public function setAddress($type, Address $addr)
     {
-        if (!($addr instanceof Address)) {
-            throw new Exception\InvalidAddressException();
-        }
-
         if ($addr->isCompany === null) {
             $addr->isCompany = false;
         }
@@ -1144,7 +1140,7 @@ class Klarna
 
             return;
         }
-        throw new Exception\UnknownAddressTypeException($type);
+        throw new \RuntimeException("Unknown address type: {$type}");
     }
 
     /**
@@ -1214,16 +1210,10 @@ class Klarna
      *
      * @param Address $addr Address object to assemble.
      *
-     * @throws Exception\KlarnaException
-     *
      * @return array The address for the specified method.
      */
-    protected function assembleAddr($addr)
+    protected function assembleAddr(Address $addr)
     {
-        if (!($addr instanceof Address)) {
-            throw new Exception\InvalidAddressException();
-        }
-
         return $addr->toArray();
     }
 
@@ -1317,7 +1307,9 @@ class Klarna
         $type = Flags::GA_GIVEN
     ) {
         if ($this->_country !== Country::SE) {
-            throw new Exception\UnsupportedMarketException('Sweden');
+            throw new \RuntimeException(
+                'This method is only available for customers from: Sweden'
+            );
         }
 
         //Get the PNO/SSN encoding constant.
@@ -1450,7 +1442,7 @@ class Klarna
         if ((($artNo === null) || ($artNo == ''))
             && (($title === null) || ($title == ''))
         ) {
-            throw new Exception\ArgumentNotSetException('Title and ArtNo', 50026);
+            throw new \InvalidArgumentException('Either Title and ArtNo needs to be set');
         }
 
         $this->_checkPrice($price);
@@ -1580,7 +1572,7 @@ class Klarna
         if (!($this->billing instanceof Address)
             && !($this->shipping instanceof Address)
         ) {
-            throw new Exception\MissingAddressException();
+            throw new \RuntimeException('No address set!');
         }
 
         //If only one address is set, copy to the other address.
@@ -1614,7 +1606,9 @@ class Klarna
         if (strlen($shipping['country']) > 0
             && ($shipping['country'] !== $this->_country)
         ) {
-            throw new Exception\ShippingCountryException();
+            throw new \RuntimeException(
+                'Shipping address country must match the country set!'
+            );
         }
 
         $paramList = array(
@@ -1825,6 +1819,7 @@ class Klarna
      * @param bool   $clear    Whether customer info should be cleared after
      *                         this call.
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return array An array with reservation number and order
@@ -1871,7 +1866,9 @@ class Klarna
         }
 
         if ($amount < 0) {
-            throw new Exception\InvalidPriceException($amount);
+            throw new \InvalidArgumentException(
+                "Amount must be greater than zero, but was: {$amount}"
+            );
         }
 
         //No addresses used for phone transactions
@@ -1884,7 +1881,9 @@ class Klarna
             if (strlen($shipping['country']) > 0
                 && ($shipping['country'] !== $this->_country)
             ) {
-                throw new Exception\ShippingCountryException();
+                throw new \RuntimeException(
+                    'Shipping address country must match the country set!'
+                );
             }
         }
 
@@ -2393,7 +2392,9 @@ class Klarna
             if (strlen($shipping['country']) > 0
                 && ($shipping['country'] !== $this->_country)
             ) {
-                throw new Exception\ShippingCountryException();
+                throw new \RuntimeException(
+                    'Shipping address country must match the country set!'
+                );
             }
         }
 
@@ -2464,6 +2465,7 @@ class Klarna
      * @param int    $amount The amount to be subtracted from the reservation.
      * @param int    $flags  Options which affect the behaviour.
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return string A new reservation number.
@@ -2478,7 +2480,7 @@ class Klarna
         $this->_checkAmount($amount);
 
         if ($amount <= 0) {
-            throw new Exception\InvalidPriceException($amount);
+            throw new \InvalidArgumentException("Amount cannot be negative: {$amount}");
         }
 
         $digestSecret = self::digest(
@@ -2512,6 +2514,7 @@ class Klarna
      * @param int $no      The number of OCR numbers to reserve.
      * @param int $country {@link Country} constant.
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return array An array of OCR numbers.
@@ -2521,7 +2524,7 @@ class Klarna
         $this->_checkNo($no);
         if ($country === null) {
             if (!$this->_country) {
-                throw new Exception\MissingCountryException();
+                throw new \InvalidArgumentException('You must set country first!');
             }
             $country = $this->_country;
         } else {
@@ -3134,6 +3137,7 @@ class Klarna
      * @param string $id   Reservation number or invoice number.
      * @param int    $type 0 if $id is an invoice or reservation, 1 for order id
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return string The order status.
@@ -3144,10 +3148,7 @@ class Klarna
 
         $this->_checkInt($type, 'type');
         if ($type !== 0 && $type !== 1) {
-            throw new Exception\InvalidTypeException(
-                'type',
-                '0 or 1'
-            );
+            throw new \InvalidArgumentException('Expected type to be 0 or 1');
         }
 
         $digestSecret = self::digest(
@@ -3355,6 +3356,7 @@ class Klarna
      * @param int      $flags    Which type of page the info will be displayed on.
      * @param PClass[] $pclasses The list of pclasses to search in.
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return PClass or false if none was found.
@@ -3362,7 +3364,7 @@ class Klarna
     public function getCheapestPClass($sum, $flags, $pclasses)
     {
         if (!is_numeric($sum)) {
-            throw new Exception\InvalidPriceException($sum);
+            throw new \InvalidArgumentException("Sum has to be numeric: {$sum}");
         }
 
         if (!is_numeric($flags)
@@ -3372,9 +3374,8 @@ class Klarna
                     Flags::CHECKOUT_PAGE, Flags::PRODUCT_PAGE, )
             )
         ) {
-            throw new Exception\InvalidTypeException(
-                'flags',
-                Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
+            throw new \InvalidArgumentException(
+                'Expected $flags to be '.Flags::CHECKOUT_PAGE.' or '.Flags::PRODUCT_PAGE
             );
         }
 
@@ -3411,6 +3412,7 @@ class Klarna
      * @param string $method XMLRPC method.
      * @param array  $array  XMLRPC parameters.
      *
+     * @throws \InvalidArgumentException
      * @throws Exception\KlarnaException
      *
      * @return mixed
@@ -3420,10 +3422,10 @@ class Klarna
         $this->_checkConfig();
 
         if (!isset($method) || !is_string($method)) {
-            throw new Exception\InvalidTypeException('method', 'string');
+            throw new \InvalidArgumentException('method has to be a string');
         }
         if ($array === null || count($array) === 0) {
-            throw new Exception\KlarnaException('Parameterlist is empty or null!', 50067);
+            throw new \InvalidArgumentException('Parameter list cannot empty or null!');
         }
         if (self::$disableXMLRPC) {
             return true;
@@ -3446,18 +3448,18 @@ class Klarna
                     $encoder->encode($p, array('extension_api'))
                 )
                 ) {
-                    throw new Exception\KlarnaException(
+                    throw new \RuntimeException(
                         'Failed to add parameters to XMLRPC message.',
                         50068
                     );
                 }
             }
 
-            //Send the message.
             if (self::$xmlrpcDebug) {
                 $this->xmlrpc->setDebug(2);
             }
 
+            //Send the message.
             $xmlrpcresp = $this->xmlrpc->send($msg);
 
             $status = $xmlrpcresp->faultCode();
@@ -3467,8 +3469,8 @@ class Klarna
             }
 
             return $encoder->decode($xmlrpcresp->value());
-        } catch (\Exception\KlarnaException $e) {
-            //Otherwise it is caught below, and rethrown.
+        } catch (Exception\KlarnaException $e) {
+            //Otherwise it is caught below, and re-thrown.
             throw $e;
         } catch (\Exception $e) {
             throw new Exception\KlarnaException($e->getMessage(), $e->getCode());
@@ -3502,7 +3504,7 @@ class Klarna
      *                            for fetching payment methods. If not specified
      *                            the locale country will be used.
      *
-     * @throws RuntimeException If the curl extension is not loaded
+     * @throws \RuntimeException If the curl extension is not loaded
      *
      * @return CheckoutServiceResponse Response with payment methods
      */
@@ -3651,9 +3653,9 @@ class Klarna
             if (class_exists('FB', false)) {
                 FB::send($mixed, $msg);
             } else {
-                echo "\n<!-- ".$msg.": \n";
+                echo "\n<!-- {$msg}: \n";
                 print_r($mixed);
-                echo "\n end ".$msg." -->\n";
+                echo "\n end {$msg} -->\n";
             }
         }
     }
@@ -3663,18 +3665,18 @@ class Klarna
      *
      * @param string $invNo Invoice number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkInvNo(&$invNo)
     {
         if (!isset($invNo)) {
-            throw new Exception\ArgumentNotSetException('Invoice number');
+            throw new \InvalidArgumentException('Invoice number must be set');
         }
         if (!is_string($invNo)) {
             $invNo = strval($invNo);
         }
         if (strlen($invNo) == 0) {
-            throw new Exception\ArgumentNotSetException('Invoice number');
+            throw new \InvalidArgumentException("Invoice number must be a string: {$invNo}");
         }
     }
 
@@ -3683,18 +3685,18 @@ class Klarna
      *
      * @param int $qty Quantity.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkQty(&$qty)
     {
         if (!isset($qty)) {
-            throw new Exception\ArgumentNotSetException('Quantity');
+            throw new \InvalidArgumentException('Quantity must be set');
         }
         if (is_numeric($qty) && !is_int($qty)) {
             $qty = intval($qty);
         }
         if (!is_int($qty)) {
-            throw new Exception\InvalidTypeException('Quantity', 'integer');
+            throw new \InvalidArgumentException('Expected Quantity to be an integer');
         }
     }
 
@@ -3703,7 +3705,7 @@ class Klarna
      *
      * @param string $artTitle Article title.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkArtTitle(&$artTitle)
     {
@@ -3711,7 +3713,7 @@ class Klarna
             $artTitle = strval($artTitle);
         }
         if (!isset($artTitle) || strlen($artTitle) == 0) {
-            throw new Exception\ArgumentNotSetException('artTitle', 50059);
+            throw new \InvalidArgumentException("artTitle must be a string: {$artTitle}");
         }
     }
 
@@ -3720,7 +3722,7 @@ class Klarna
      *
      * @param int|string $artNo Article number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkArtNo(&$artNo)
     {
@@ -3729,7 +3731,7 @@ class Klarna
             $artNo = strval($artNo);
         }
         if (!isset($artNo) || strlen($artNo) == 0 || (!is_string($artNo))) {
-            throw new Exception\ArgumentNotSetException('artNo');
+            throw new \InvalidArgumentException("artNo must be set and a string: {$artNo}");
         }
     }
 
@@ -3738,12 +3740,12 @@ class Klarna
      *
      * @param string $credNo Credit number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkCredNo(&$credNo)
     {
         if (!isset($credNo)) {
-            throw new Exception\ArgumentNotSetException('Credit number');
+            throw new \InvalidArgumentException('credNo is not set');
         }
 
         if ($credNo === false || $credNo === null) {
@@ -3752,7 +3754,7 @@ class Klarna
         if (!is_string($credNo)) {
             $credNo = strval($credNo);
             if (!is_string($credNo)) {
-                throw new Exception\InvalidTypeException('Credit number', 'string');
+                throw new \InvalidArgumentException('Credit number is not a string');
             }
         }
     }
@@ -3762,15 +3764,15 @@ class Klarna
      *
      * @param array $artNos Array from {@link Klarna::addArtNo()}.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkArtNos(&$artNos)
     {
         if (!is_array($artNos)) {
-            throw new Exception\InvalidTypeException('artNos', 'array');
+            throw new \InvalidArgumentException('artNos is not an array');
         }
         if (empty($artNos)) {
-            throw new Exception\KlarnaException('ArtNo array is empty!', 50064);
+            throw new \InvalidArgumentException('ArtNo array cannot empty!');
         }
     }
 
@@ -3780,18 +3782,20 @@ class Klarna
      * @param int    $int   {@link Flags flags} constant.
      * @param string $field Name of the field.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkInt(&$int, $field)
     {
         if (!isset($int)) {
-            throw new Exception\ArgumentNotSetException($field);
+            throw new \InvalidArgumentException("Expected field to be set: {$field}");
         }
         if (is_numeric($int) && !is_int($int)) {
             $int = intval($int);
         }
         if (!is_numeric($int) || !is_int($int)) {
-            throw new Exception\InvalidTypeException($field, 'integer');
+            throw new \InvalidArgumentException(
+                "Expected field to be an integer: {$field}"
+            );
         }
     }
 
@@ -3800,18 +3804,20 @@ class Klarna
      *
      * @param float $vat VAT.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkVAT(&$vat)
     {
         if (!isset($vat)) {
-            throw new Exception\ArgumentNotSetException('VAT');
+            throw new \InvalidArgumentException('VAT must be set');
         }
         if (is_numeric($vat) && (!is_int($vat) || !is_float($vat))) {
             $vat = floatval($vat);
         }
         if (!is_numeric($vat) || (!is_int($vat) && !is_float($vat))) {
-            throw new Exception\InvalidTypeException('VAT', 'integer or float');
+            throw new \InvalidArgumentException(
+                "VAT must be an integer or float: {$vat}"
+            );
         }
     }
 
@@ -3820,12 +3826,12 @@ class Klarna
      *
      * @param int $amount Amount.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkAmount(&$amount)
     {
         if (!isset($amount)) {
-            throw new Exception\ArgumentNotSetException('Amount');
+            throw new \InvalidArgumentException('Amount must be set');
         }
         if (is_numeric($amount)) {
             $this->_fixValue($amount);
@@ -3834,7 +3840,7 @@ class Klarna
             $amount = intval($amount);
         }
         if (!is_numeric($amount) || !is_int($amount)) {
-            throw new Exception\InvalidTypeException('amount', 'integer');
+            throw new \InvalidArgumentException("amount must be an integer: {$amount}");
         }
     }
 
@@ -3843,12 +3849,12 @@ class Klarna
      *
      * @param int $price Price.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkPrice(&$price)
     {
         if (!isset($price)) {
-            throw new Exception\ArgumentNotSetException('Price');
+            throw new \InvalidArgumentException('Price must be set');
         }
         if (is_numeric($price)) {
             $this->_fixValue($price);
@@ -3857,7 +3863,7 @@ class Klarna
             $price = intval($price);
         }
         if (!is_numeric($price) || !is_int($price)) {
-            throw new Exception\InvalidTypeException('Price', 'integer');
+            throw new \InvalidArgumentException("Price must be an integer: {$price}");
         }
     }
 
@@ -3877,12 +3883,12 @@ class Klarna
      *
      * @param float $discount Discount amount.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkDiscount(&$discount)
     {
         if (!isset($discount)) {
-            throw new Exception\ArgumentNotSetException('Discount');
+            throw new \InvalidArgumentException('Discount must be set');
         }
         if (is_numeric($discount)
             && (!is_int($discount) || !is_float($discount))
@@ -3893,7 +3899,9 @@ class Klarna
         if (!is_numeric($discount)
             || (!is_int($discount) && !is_float($discount))
         ) {
-            throw new Exception\InvalidTypeException('Discount', 'integer or float');
+            throw new \InvalidArgumentException(
+                "Discount must be an integer or float: {$discount}"
+            );
         }
     }
 
@@ -3902,18 +3910,20 @@ class Klarna
      *
      * @param string $estoreOrderNo Estores order number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkEstoreOrderNo(&$estoreOrderNo)
     {
         if (!isset($estoreOrderNo)) {
-            throw new Exception\ArgumentNotSetException('Order number');
+            throw new \InvalidArgumentException('Order number must be set');
         }
 
         if (!is_string($estoreOrderNo)) {
             $estoreOrderNo = strval($estoreOrderNo);
             if (!is_string($estoreOrderNo)) {
-                throw new Exception\InvalidTypeException('Order number', 'string');
+                throw new \InvalidArgumentException(
+                    "Order number must be a string: {$estoreOrderNo}"
+                );
             }
         }
     }
@@ -3924,16 +3934,17 @@ class Klarna
      * @param string $pno Personal number, social security  number, ...
      * @param int    $enc {@link Encoding PNO Encoding} constant.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException         If pno is unsupported
      */
     private function _checkPNO(&$pno, $enc)
     {
         if (!$pno) {
-            throw new Exception\ArgumentNotSetException('PNO/SSN');
+            throw new \InvalidArgumentException('PNO/SSN must be set');
         }
 
         if (!Encoding::checkPNO($pno)) {
-            throw new Exception\InvalidPNOException();
+            throw new \RuntimeException('PNO/SSN is not valid!');
         }
     }
 
@@ -3942,18 +3953,20 @@ class Klarna
      *
      * @param int $country {@link Country Country} constant.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkCountry(&$country)
     {
         if (!isset($country)) {
-            throw new Exception\ArgumentNotSetException('Country');
+            throw new \InvalidArgumentException('Country must be set');
         }
         if (is_numeric($country) && !is_int($country)) {
             $country = intval($country);
         }
         if (!is_numeric($country) || !is_int($country)) {
-            throw new Exception\InvalidTypeException('Country', 'integer');
+            throw new \InvalidArgumentException(
+                "Country must be an integer: {$country}"
+            );
         }
     }
 
@@ -3962,18 +3975,18 @@ class Klarna
      *
      * @param int $language {@link Language Language} constant.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkLanguage(&$language)
     {
         if (!isset($language)) {
-            throw new Exception\ArgumentNotSetException('Language');
+            throw new \InvalidArgumentException('Language must be set');
         }
         if (is_numeric($language) && !is_int($language)) {
             $language = intval($language);
         }
         if (!is_numeric($language) || !is_int($language)) {
-            throw new Exception\InvalidTypeException('Language', 'integer');
+            throw new \InvalidArgumentException('Language must be a integer');
         }
     }
 
@@ -3982,18 +3995,18 @@ class Klarna
      *
      * @param int $currency {@link Currency Currency} constant.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkCurrency(&$currency)
     {
         if (!isset($currency)) {
-            throw new Exception\ArgumentNotSetException('Currency');
+            throw new \InvalidArgumentException('Currency must be set');
         }
         if (is_numeric($currency) && !is_int($currency)) {
             $currency = intval($currency);
         }
         if (!is_numeric($currency) || !is_int($currency)) {
-            throw new Exception\InvalidTypeException('Currency', 'integer');
+            throw new \InvalidArgumentException('Currency must be a integer');
         }
     }
 
@@ -4002,18 +4015,20 @@ class Klarna
      *
      * @param int $no Number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkNo(&$no)
     {
         if (!isset($no)) {
-            throw new Exception\ArgumentNotSetException('no');
+            throw new \InvalidArgumentException('number must be set');
         }
         if (is_numeric($no) && !is_int($no)) {
             $no = intval($no);
         }
         if (!is_numeric($no) || !is_int($no) || $no <= 0) {
-            throw new Exception\InvalidTypeException('no', 'integer > 0');
+            throw new \InvalidArgumentException(
+                'number must be an integer and greater than 0'
+            );
         }
     }
 
@@ -4022,7 +4037,7 @@ class Klarna
      *
      * @param string $rno Reservation number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkRNO(&$rno)
     {
@@ -4030,7 +4045,7 @@ class Klarna
             $rno = strval($rno);
         }
         if (strlen($rno) == 0) {
-            throw new Exception\ArgumentNotSetException('RNO');
+            throw new \InvalidArgumentException('RNO must be set');
         }
     }
 
@@ -4040,21 +4055,21 @@ class Klarna
      * @param string $reference Reference string.
      * @param string $refCode   Reference code.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkRef(&$reference, &$refCode)
     {
         if (!is_string($reference)) {
             $reference = strval($reference);
             if (!is_string($reference)) {
-                throw new Exception\InvalidTypeException('Reference', 'string');
+                throw new \InvalidArgumentException('Reference must be a string');
             }
         }
 
         if (!is_string($refCode)) {
             $refCode = strval($refCode);
             if (!is_string($refCode)) {
-                throw new Exception\InvalidTypeException('Reference code', 'string');
+                throw new \InvalidArgumentException('Reference code must be a string');
             }
         }
     }
@@ -4064,14 +4079,14 @@ class Klarna
      *
      * @param string $ocr OCR number.
      *
-     * @throws Exception\KlarnaException
+     * @throws \InvalidArgumentException
      */
     private function _checkOCR(&$ocr)
     {
         if (!is_string($ocr)) {
             $ocr = strval($ocr);
             if (!is_string($ocr)) {
-                throw new Exception\InvalidTypeException('OCR', 'string');
+                throw new \InvalidArgumentException('OCR must be a string');
             }
         }
     }
@@ -4082,7 +4097,7 @@ class Klarna
      * @param string $argument argument to check
      * @param string $name     name of argument
      *
-     * @throws Exception\ArgumentNotSetException
+     * @throws \InvalidArgumentException
      */
     private function _checkArgument($argument, $name)
     {
@@ -4091,14 +4106,14 @@ class Klarna
         }
 
         if (strlen($argument) == 0) {
-            throw new Exception\ArgumentNotSetException($name);
+            throw new \InvalidArgumentException("{$name} must be set: {$argument}");
         }
     }
 
     /**
      * Check so Locale settings (country, currency, language) are set.
      *
-     * @throws Exception\KlarnaException
+     * @throws \RuntimeException If locale configurations are missing
      */
     private function _checkLocale()
     {
@@ -4106,19 +4121,19 @@ class Klarna
             || !is_int($this->_language)
             || !is_int($this->_currency)
         ) {
-            throw new Exception\InvalidLocaleException();
+            throw new \RuntimeException('You must set country, language and currency!');
         }
     }
 
     /**
-     * Checks wether a goodslist is set.
+     * Checks whether a goods list is set.
      *
-     * @throws Exception\MissingGoodslistException
+     * @throws \RuntimeException
      */
     private function _checkGoodslist()
     {
         if (!is_array($this->goodsList) || empty($this->goodsList)) {
-            throw new Exception\MissingGoodslistException();
+            throw new \RuntimeException('No articles in goodslist');
         }
     }
 
@@ -4126,6 +4141,8 @@ class Klarna
      * Ensure the configuration is of the correct type.
      *
      * @param array|ArrayAccess|null $config an optional config to validate
+     *
+     * @throws \RuntimeException
      */
     private function _checkConfig($config = null)
     {
@@ -4135,7 +4152,7 @@ class Klarna
         if (!($config instanceof \ArrayAccess)
             && !is_array($config)
         ) {
-            throw new Exception\IncompleteConfigurationException();
+            throw new \RuntimeException('Klarna instance not fully configured');
         }
     }
 }

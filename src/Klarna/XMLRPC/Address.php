@@ -495,8 +495,9 @@ class Address
     public function setCountry($country)
     {
         if ($country === null) {
-            throw new Exceptions\ArgumentNotSetException('Country');
+            throw new \InvalidArgumentException('Expected $country to be a string');
         }
+
         if (is_numeric($country)) {
             if (!is_int($country)) {
                 $country = intval($country);
@@ -510,7 +511,7 @@ class Address
 
             return;
         }
-        throw new Exceptions\KlarnaException("Failed to set country! ($country)");
+        throw new \RuntimeException("Failed to set country! ({$country})");
     }
 
     /**

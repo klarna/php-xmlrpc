@@ -50,6 +50,8 @@ class CheckoutServiceResponse
      * @param CheckoutServiceRequest $request The original request
      * @param int                    $status  HTTP status code
      * @param string                 $data    JSON string
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct($request, $status, $data)
     {
@@ -58,7 +60,7 @@ class CheckoutServiceResponse
         $data = json_decode($data, true);
 
         if ($data === null) {
-            throw new InvalidArgumentException('data must be a valid JSON string');
+            throw new \InvalidArgumentException('Expected $data to be a valid JSON string');
         }
 
         $this->data = $data;
