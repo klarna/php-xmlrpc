@@ -33,8 +33,6 @@ namespace Klarna\XMLRPC;
  * language    - Language constant or code (int|string)
  * currency    - Currency constant or code (int|string)
  * mode        - Klarna::BETA or Klarna::LIVE
- * ssl         - Use HTTPS or HTTP. (bool)
- *               '/srv/shop/pclasses.json'
  * xmlrpcDebug - XMLRPC debugging (bool)
  * debug       - Normal debugging (bool)
  */
