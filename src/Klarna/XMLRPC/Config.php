@@ -19,10 +19,6 @@ namespace Klarna\XMLRPC;
 /**
  * Configuration class for the Klarna instance.
  *
- * Config stores added fields in JSON, it also prepends.<br>
- * Loads/saves specified file, or default file, if {@link Config::$store}
- * is set to true.<br>
- *
  * You add settings using the ArrayAccess:<br>
  * $arr['field'] = $val or $arr->offsetSet('field', $val);<br>
  *
@@ -45,47 +41,7 @@ class Config implements \ArrayAccess
      *
      * @var array
      */
-    protected $options;
-
-    /**
-     * If set to true, saves the config.
-     *
-     * @var bool
-     */
-    public static $store = true;
-
-    /**
-     * URI to the config file.
-     *
-     * @ignore Do not show in PHPDoc.
-     *
-     * @var string
-     */
-    protected $file;
-
-    /**
-     * Class constructor.
-     *
-     * Loads specified file, or default file,
-     * if {@link Config::$store} is set to true.
-     *
-     * @param string $file URI to config file, e.g. ./config.json
-     */
-    public function __construct($file = null)
-    {
-        $this->options = array();
-        if ($file) {
-            $this->file = $file;
-            if (is_readable($this->file)) {
-                $this->options = json_decode(
-                    file_get_contents(
-                        $this->file
-                    ),
-                    true
-                );
-            }
-        }
-    }
+    protected $options = array();
 
     /**
      * Clears the config.
@@ -93,24 +49,6 @@ class Config implements \ArrayAccess
     public function clear()
     {
         $this->options = array();
-    }
-
-    /**
-     * Class destructor.
-     *
-     * Saves specified file, or default file,
-     * if {@link Config::$store} is set to true.
-     */
-    public function __destruct()
-    {
-        if (self::$store && $this->file) {
-            if ((!file_exists($this->file)
-                && is_writable(dirname($this->file)))
-                || is_writable($this->file)
-            ) {
-                file_put_contents($this->file, json_encode($this->options));
-            }
-        }
     }
 
     /**
