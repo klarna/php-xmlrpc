@@ -504,7 +504,6 @@ class Klarna
         $mode = self::LIVE
     ) {
         try {
-            Config::$store = false;
             $this->config = new Config(null);
 
             $this->config['eid'] = $eid;
