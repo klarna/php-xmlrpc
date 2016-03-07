@@ -1,3 +1,6 @@
+## v4.1.0 - 2016-02-16
+- **NEW META-113** Add function extendInvoiceDueDate - *Joakim.L*
+
 ## v4.0.0 - 2015-05-27
 - **NEW MINT-2176** Make SDK available on composer - *Joakim.L*
 - **FIX MINT-2089** Fix URI for BETA mode with checkoutService - *Joakim.L*

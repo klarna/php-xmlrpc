@@ -41,13 +41,12 @@ class Klarna_PCStorageInvalidException extends KlarnaException
     /**
      * Constructor
      *
-     * @param string $className     classname
-     * @param string $pclassStorage pcstorage class file
+     * @param string $className Class name of the storage module
      */
-    public function __construct($className, $pclassStorage)
+    public function __construct($className)
     {
         parent::__construct(
-            "$className located in $pclassStorage is not a PCStorage instance.",
+            "$className is not a PCStorage instance.",
             50052
         );
     }

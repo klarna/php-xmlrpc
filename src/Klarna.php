@@ -51,7 +51,7 @@ class Klarna
      *
      * @var string
      */
-    protected $VERSION = 'php:api:4.0.0';
+    protected $VERSION = 'php:api:4.1.0';
 
     /**
      * Klarna protocol identifier.
@@ -2016,6 +2016,47 @@ class Klarna
     }
 
     /**
+     * Extends the due date on the specified invoice.
+     *
+     * @param string  $invNo   Invoice number.
+     * @param int     $numDays Amount of days to extend the invoice with.
+     * @param boolean $dryRun  Enabling dry run will only calculate cost.
+     *
+     * @throws KlarnaException
+     * @return array An array with cost as a float, and the new expiry date
+     *               in the format YYYY-MM-DD.
+     *               ['cost' => float, 'new_date' => string]
+     */
+    public function extendInvoiceDueDate($invNo, $numDays, $dryRun = false)
+    {
+        $this->_checkInvNo($invNo);
+
+        $this->_checkInt($numDays, 'numDays');
+
+        $digestSecret = self::digest(
+            self::colon($this->_eid, $invNo, $this->_secret)
+        );
+
+        $paramList = array(
+            $this->_eid,
+            $invNo,
+            $digestSecret,
+            array(
+                'days' => $numDays,
+                'calculate_only' => $dryRun === true
+            )
+        );
+
+        self::printDebug('extend_invoice_due_date', $paramList);
+
+        $result = $this->xmlrpc_call('extend_invoice_due_date', $paramList);
+
+        $result['cost'] = floatval($result['cost'] / 100);
+
+        return $result;
+    }
+
+    /**
      * Cancels a reservation.
      *
      * @param string $rno Reservation number.
@@ -3255,9 +3296,7 @@ class Klarna
         $storage = new $className;
 
         if (!($storage instanceof PCStorage)) {
-            throw new Klarna_PCStorageInvalidException(
-                $className, $pclassStorage
-            );
+            throw new Klarna_PCStorageInvalidException($className);
         }
         return $storage;
     }
