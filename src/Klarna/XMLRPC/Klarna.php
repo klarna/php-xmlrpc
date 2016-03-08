@@ -2107,37 +2107,6 @@ class Klarna
     }
 
     /**
-     * Retrieves the total amount for an active invoice.
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return float The total amount.
-     */
-    public function invoiceAmount($invNo)
-    {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-        );
-
-        self::printDebug('invoice_amount array', $paramList);
-
-        $result = $this->xmlrpc_call('invoice_amount', $paramList);
-
-        //Result is in cents, fix it.
-        return $result / 100;
-    }
-
-    /**
      * Changes the order number of a purchase that was set when the order was
      * made online.
      *
