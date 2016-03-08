@@ -2520,7 +2520,8 @@ class Klarna
             $msg = new PhpXmlRpc\Request($method);
             $params = array_merge(
                 array(
-                    $this->PROTO, $this->VERSION,
+                    $this->PROTO,
+                    $this->VERSION,
                 ),
                 $array
             );
@@ -2542,7 +2543,10 @@ class Klarna
             }
 
             //Send the message.
-            $xmlrpcresp = $this->xmlrpc->send($msg);
+            $xmlrpcresp = $this->xmlrpc->send(
+                $msg,
+                isset($this->config['timeout']) ? intval($this->config['timeout']) : 10
+            );
 
             $status = $xmlrpcresp->faultCode();
 
