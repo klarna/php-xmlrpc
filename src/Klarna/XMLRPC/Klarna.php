@@ -2390,50 +2390,6 @@ class Klarna
     }
 
     /**
-     * Changes the amount of a fee (e.g. the invoice fee) in a passive invoice.
-     *
-     * <b>Type can be</b>:<br>
-     * {@link Flags::IS_SHIPMENT}<br>
-     * {@link Flags::IS_HANDLING}<br>
-     *
-     * @param string $invNo     Invoice number.
-     * @param int    $type      Charge type.
-     * @param int    $newAmount The new amount for the charge.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string Invoice number.
-     */
-    public function updateChargeAmount($invNo, $type, $newAmount)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkInt($type, 'type');
-        $this->_checkAmount($newAmount);
-
-        if ($type === Flags::IS_SHIPMENT) {
-            $type = 1;
-        } elseif ($type === Flags::IS_HANDLING) {
-            $type = 2;
-        }
-
-        $digestSecret = self::digest(
-            self::colon($invNo, $type, $newAmount, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $digestSecret,
-            $invNo,
-            $type,
-            $newAmount,
-        );
-
-        self::printDebug('update_charge_amount', $paramList);
-
-        return $this->xmlrpc_call('update_charge_amount', $paramList);
-    }
-
-    /**
      * Returns the current order status for a specific reservation or invoice.
      * Use this when {@link Klarna::reserveAmount()} returns a {@link Flags::PENDING}
      * status.
