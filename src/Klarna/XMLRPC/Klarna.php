@@ -2279,8 +2279,7 @@ class Klarna
 
     /**
      * Adds an article number and quantity to be used in
-     * {@link Klarna::activatePart()}, {@link Klarna::creditPart()}
-     * and {@link Klarna::invoicePartAmount()}.
+     * {@link Klarna::creditPart()} and {@link Klarna::invoicePartAmount()}.
      *
      * @param int    $qty   Quantity of specified article.
      * @param string $artNo Article number.
@@ -2297,75 +2296,6 @@ class Klarna
         }
 
         $this->artNos[] = array('artno' => $artNo, 'qty' => $qty);
-    }
-
-    /**
-     * Partially activates a passive invoice.
-     *
-     * Returned array contains index "url" and "invno".<br>
-     * The value of "url" is a URL pointing to a temporary PDF-version of the
-     * activated invoice.<br>
-     * The value of "invno" is either 0 if the entire invoice was activated or
-     * the number on the new passive invoice.<br>
-     *
-     * <b>Note</b>:<br>
-     * You need to call {@link Klarna::addArtNo()} first, to specify which
-     * articles and how many you want to partially activate.<br>
-     * If you want to change the shipment type, you can specify it using:
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either: {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT}
-     * or {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}
-     *
-     * @param string $invNo  Invoice numbers.
-     * @param int    $pclass PClass id used for this invoice.
-     * @param bool   $clear  Whether customer info should be cleared after
-     *                       this call.
-     *
-     * @see Klarna::addArtNo()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array with invoice URL and invoice number.
-     *               ['url' => val, 'invno' => val]
-     */
-    public function activatePart(
-        $invNo,
-        $pclass = PClass::INVOICE,
-        $clear = true
-    ) {
-        $this->_checkInvNo($invNo);
-        $this->_checkArtNos($this->artNos);
-
-        self::printDebug('activate_part artNos array', $this->artNos);
-
-        //function activate_part_digest
-        $string = $this->_eid.':'.$invNo.':';
-        foreach ($this->artNos as $artNo) {
-            $string .= $artNo['artno'].':'.$artNo['qty'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end activate_part_digest
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $this->artNos,
-            $digestSecret,
-            $pclass,
-            $this->shipInfo,
-        );
-
-        self::printDebug('activate_part array', $paramList);
-
-        $result = $this->xmlrpc_call('activate_part', $paramList);
-
-        if ($clear === true) {
-            $this->clear();
-        }
-
-        self::printDebug('activate_part result', $result);
-
-        return $result;
     }
 
     /**
