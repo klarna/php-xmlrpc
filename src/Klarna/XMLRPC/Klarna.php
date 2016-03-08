@@ -2434,50 +2434,6 @@ class Klarna
     }
 
     /**
-     * The invoice_address function is used to retrieve the address of a
-     * purchase.
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return Address
-     */
-    public function invoiceAddress($invNo)
-    {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-        );
-
-        self::printDebug('invoice_address', $paramList);
-
-        $result = $this->xmlrpc_call('invoice_address', $paramList);
-
-        $addr = new Address();
-        if (strlen($result[0]) > 0) {
-            $addr->isCompany = false;
-            $addr->setFirstName($result[0]);
-            $addr->setLastName($result[1]);
-        } else {
-            $addr->isCompany = true;
-            $addr->setCompanyName($result[1]);
-        }
-        $addr->setStreet($result[2]);
-        $addr->setZipCode($result[3]);
-        $addr->setCity($result[4]);
-        $addr->setCountry($result[5]);
-
-        return $addr;
-    }
-
-    /**
      * Retrieves the amount of a specific goods from a purchase.
      *
      * <b>Note</b>:<br>
