@@ -2366,46 +2366,6 @@ class Klarna
     }
 
     /**
-     * Associates a pno with a customer number when you want to make future
-     * purchases without a pno.
-     *
-     * @param string $pno      Social security number, Personal number, ...
-     * @param string $custNo   The customer number.
-     * @param int    $encoding {@link Encoding PNO Encoding} constant.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool True, if the customer number was associated with the pno.
-     */
-    public function setCustomerNo($pno, $custNo, $encoding = null)
-    {
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-        $this->_checkPNO($pno, $encoding);
-
-        $this->_checkArgument($custNo, 'custNo');
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $pno, $custNo, $this->_secret)
-        );
-        $paramList = array(
-            $pno,
-            $custNo,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-        );
-
-        self::printDebug('set_customer_no', $paramList);
-
-        $result = $this->xmlrpc_call('set_customer_no', $paramList);
-
-        return $result == 'ok';
-    }
-
-    /**
      * Removes a customer number from association with a pno.
      *
      * @param string $custNo The customer number.
