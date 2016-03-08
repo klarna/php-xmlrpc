@@ -1433,38 +1433,6 @@ class Klarna
     }
 
     /**
-     * Removes a passive invoices which has previously been created with
-     * True is returned if the invoice was successfully removed, otherwise an
-     * exception is thrown.<br>.
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool
-     */
-    public function deleteInvoice($invNo)
-    {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-        );
-
-        self::printDebug('delete_invoice', $paramList);
-
-        $result = $this->xmlrpc_call('delete_invoice', $paramList);
-
-        return ($result == 'ok') ? true : false;
-    }
-
-    /**
      * Summarizes the prices of the held goods list.
      *
      * @return int total amount
