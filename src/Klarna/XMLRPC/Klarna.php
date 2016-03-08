@@ -2107,40 +2107,6 @@ class Klarna
     }
 
     /**
-     * Changes the order number of a purchase that was set when the order was
-     * made online.
-     *
-     * @param string $invNo   Invoice number.
-     * @param string $orderid Estores order number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string Invoice number.
-     */
-    public function updateOrderNo($invNo, $orderid)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkEstoreOrderNo($orderid);
-
-        $digestSecret = self::digest(
-            self::colon($invNo, $orderid, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $digestSecret,
-            $invNo,
-            $orderid,
-        );
-
-        self::printDebug('update_orderno array', $paramList);
-
-        $result = $this->xmlrpc_call('update_orderno', $paramList);
-
-        return $result;
-    }
-
-    /**
      * Sends an activated invoice to the customer via e-mail. <br>
      * The email is sent in plain text format and contains a link to a
      * PDF-invoice.<br>.
