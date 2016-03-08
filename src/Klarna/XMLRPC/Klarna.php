@@ -1182,18 +1182,6 @@ class Klarna
     }
 
     /**
-     * Adds an additional comment to the comment field. Appends with a newline.
-     *
-     * @param string $data comment to add
-     *
-     * @see Klarna::setComment()
-     */
-    public function addComment($data)
-    {
-        $this->comment .= "\n".$data;
-    }
-
-    /**
      * Returns the PNO/SSN encoding constant for currently set country.
      *
      * <b>Note</b>:<br>
