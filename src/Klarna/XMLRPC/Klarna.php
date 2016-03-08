@@ -1706,48 +1706,6 @@ class Klarna
     }
 
     /**
-     * Changes specified reservation to a new amount.
-     *
-     * <b>Flags can be either of these</b>:<br>
-     * {@link Flags::NEW_AMOUNT}<br>
-     * {@link Flags::ADD_AMOUNT}<br>
-     *
-     * @param string $rno    Reservation number.
-     * @param int    $amount Amount including VAT.
-     * @param int    $flags  Options which affect the behaviour.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool True, if the change was successful.
-     */
-    public function changeReservation(
-        $rno,
-        $amount,
-        $flags = Flags::NEW_AMOUNT
-    ) {
-        $this->_checkRNO($rno);
-        $this->_checkAmount($amount);
-        $this->_checkInt($flags, 'flags');
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $rno, $amount, $this->_secret)
-        );
-        $paramList = array(
-            $rno,
-            $amount,
-            $this->_eid,
-            $digestSecret,
-            $flags,
-        );
-
-        self::printDebug('change_reservation', $paramList);
-
-        $result = $this->xmlrpc_call('change_reservation', $paramList);
-
-        return ($result  == 'ok') ? true : false;
-    }
-
-    /**
      * Update the reservation matching the given reservation number.
      *
      * @example docs/examples/update.php How to update a reservation.
