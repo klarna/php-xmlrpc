@@ -173,14 +173,6 @@ class Klarna
     protected $shipping;
 
     /**
-     * Estore's user(name) or identifier.
-     * Only used in {@link Klarna::addTransaction()}.
-     *
-     * @var string
-     */
-    protected $estoreUser = '';
-
-    /**
      * External order numbers from other systems.
      *
      * @var string
@@ -959,7 +951,6 @@ class Klarna
      *
      * <b>Available named values are</b>:<br>
      * string - cust_no<br>
-     * string - estore_user<br>
      * string - ready_date<br>
      * string - rand_string<br>
      * int    - bclass<br>
@@ -1118,17 +1109,15 @@ class Klarna
 
     /**
      * Sets order id's from other systems for the upcoming transaction.<br>
-     * User is only sent with {@link Klarna::addTransaction()}.<br>.
      *
      * @param string $orderid1 order id 1
      * @param string $orderid2 order id 2
-     * @param string $user     username
      *
      * @see Klarna::setExtraInfo()
      *
      * @throws Exception\KlarnaException
      */
-    public function setEstoreInfo($orderid1 = '', $orderid2 = '', $user = '')
+    public function setEstoreInfo($orderid1 = '', $orderid2 = '')
     {
         if (!is_string($orderid1)) {
             $orderid1 = strval($orderid1);
@@ -1136,14 +1125,6 @@ class Klarna
 
         if (!is_string($orderid2)) {
             $orderid2 = strval($orderid2);
-        }
-
-        if (!is_string($user)) {
-            $user = strval($user);
-        }
-
-        if (strlen($user) > 0) {
-            $this->setExtraInfo('estore_user', $user);
         }
 
         $this->orderid[0] = $orderid1;
@@ -1394,7 +1375,6 @@ class Klarna
      *                         ({@link Flags::IS_HANDLING}) and it's price
      *                         ({@link Flags::INC_VAT})
      *
-     * @see Klarna::addTransaction()
      * @see Klarna::reserveAmount()
      * @see Klarna::activateReservation()
      *
@@ -1453,183 +1433,7 @@ class Klarna
     }
 
     /**
-     * Assembles and sends the current order to Klarna.<br>
-     * This clears all relevant data if $clear is set to true.<br>.
-     *
-     * <b>This method returns an array with</b>:<br>
-     * Invoice number<br>
-     * Order status flag<br>
-     *
-     * If the flag {@link Flags::RETURN_OCR} is used:<br>
-     * Invoice number<br>
-     * OCR number <br>
-     * Order status flag<br>
-     *
-     * <b>Order status can be</b>:<br>
-     * {@link Flags::ACCEPTED}<br>
-     * {@link Flags::PENDING}<br>
-     * {@link Flags::DENIED}<br>
-     *
-     * Gender is only required for Germany and Netherlands.<br>
-     *
-     * <b>Flags can be</b>:<br>
-     * {@link Flags::NO_FLAG}<br>
-     * {@link Flags::TEST_MODE}<br>
-     * {@link Flags::AUTO_ACTIVATE}<br>
-     * {@link Flags::SENSITIVE_ORDER}<br>
-     * {@link Flags::RETURN_OCR}<br>
-     * {@link Flags::M_PHONE_TRANSACTION}<br>
-     * {@link Flags::M_SEND_PHONE_PIN}<br>
-     *
-     * Some flags can be added to each other for multiple options.
-     *
-     * <b>Note</b>:<br>
-     * Normal shipment type is assumed unless otherwise specified,
-     * ou can do this by calling:<br>
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either:<br>
-     * {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT} or
-     * {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}<br>
-     *
-     * @param string $pno      Personal number, SSN, date of birth, etc.
-     * @param int    $gender   {@link Flags::FEMALE} or
-     *                         {@link Flags::MALE},
-     *                         null or "" for unspecified.
-     * @param int    $flags    Options which affect the behaviour.
-     * @param int    $pclass   PClass id used for this invoice.
-     * @param int    $encoding {@link Encoding Encoding} constant for the
-     *                         PNO parameter.
-     * @param bool   $clear    Whether customer info should be cleared after
-     *                         this call or not.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array with invoice number and order status. [string, int]
-     */
-    public function addTransaction(
-        $pno,
-        $gender,
-        $flags = Flags::NO_FLAG,
-        $pclass = PClass::INVOICE,
-        $encoding = null,
-        $clear = true
-    ) {
-        $this->_checkLocale(50023);
-
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-
-        if (!($flags & Flags::PRE_PAY)) {
-            $this->_checkPNO($pno, $encoding);
-        }
-
-        if ($gender === 'm') {
-            $gender = Flags::MALE;
-        } elseif ($gender === 'f') {
-            $gender = Flags::FEMALE;
-        }
-
-        if ($gender !== null && strlen($gender) > 0) {
-            $this->_checkInt($gender, 'gender');
-        }
-
-        $this->_checkInt($flags, 'flags');
-        $this->_checkInt($pclass, 'pclass');
-
-        //Check so required information is set.
-        $this->_checkGoodslist();
-
-        //We need at least one address set
-        if (!($this->billing instanceof Address)
-            && !($this->shipping instanceof Address)
-        ) {
-            throw new \RuntimeException('No address set!');
-        }
-
-        //If only one address is set, copy to the other address.
-        if (!($this->shipping instanceof Address)
-            && ($this->billing instanceof Address)
-        ) {
-            $this->shipping = $this->billing;
-        } elseif (!($this->billing instanceof Address)
-            && ($this->shipping instanceof Address)
-        ) {
-            $this->billing = $this->shipping;
-        }
-
-        //Assume normal shipment unless otherwise specified.
-        if (!isset($this->shipInfo['delay_adjust'])) {
-            $this->setShipmentInfo('delay_adjust', Flags::NORMAL_SHIPMENT);
-        }
-
-        //function add_transaction_digest
-        $string = '';
-        foreach ($this->goodsList as $goods) {
-            $string .= $goods['goods']['title'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end function add_transaction_digest
-
-        $billing = $this->assembleAddr($this->billing);
-        $shipping = $this->assembleAddr($this->shipping);
-
-        //Shipping country must match specified country!
-        if (strlen($shipping['country']) > 0
-            && ($shipping['country'] !== $this->_country)
-        ) {
-            throw new \RuntimeException(
-                'Shipping address country must match the country set!'
-            );
-        }
-
-        $paramList = array(
-            $pno,
-            $gender,
-            $this->reference,
-            $this->reference_code,
-            $this->orderid[0],
-            $this->orderid[1],
-            $shipping,
-            $billing,
-            $this->getClientIP(),
-            $flags,
-            $this->_currency,
-            $this->_country,
-            $this->_language,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-            $pclass,
-            $this->goodsList,
-            $this->comment,
-            $this->shipInfo,
-            $this->travelInfo,
-            $this->incomeInfo,
-            $this->bankInfo,
-            $this->sid,
-            $this->extraInfo,
-        );
-
-        self::printDebug('add_invoice', $paramList);
-
-        $result = $this->xmlrpc_call('add_invoice', $paramList);
-
-        if ($clear === true) {
-            //Make sure any stored values that need to be unique between
-            //purchases are cleared.
-            $this->clear();
-        }
-
-        self::printDebug('add_invoice result', $result);
-
-        return $result;
-    }
-
-    /**
      * Activates previously created invoice
-     * (from {@link Klarna::addTransaction()}).
      *
      * <b>Note</b>:<br>
      * If you want to change the shipment type, you can specify it using:
@@ -1682,7 +1486,6 @@ class Klarna
 
     /**
      * Removes a passive invoices which has previously been created with
-     * {@link Klarna::addTransaction()}.
      * True is returned if the invoice was successfully removed, otherwise an
      * exception is thrown.<br>.
      *
@@ -3096,8 +2899,7 @@ class Klarna
 
     /**
      * Returns the current order status for a specific reservation or invoice.
-     * Use this when {@link Klarna::addTransaction()} or
-     * {@link Klarna::reserveAmount()} returns a {@link Flags::PENDING}
+     * Use this when {@link Klarna::reserveAmount()} returns a {@link Flags::PENDING}
      * status.
      *
      * <b>Order status can be</b>:<br>
