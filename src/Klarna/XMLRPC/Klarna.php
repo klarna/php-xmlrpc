@@ -1433,58 +1433,6 @@ class Klarna
     }
 
     /**
-     * Activates previously created invoice
-     *
-     * <b>Note</b>:<br>
-     * If you want to change the shipment type, you can specify it using:
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either: {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT} or
-     * {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}
-     *
-     * @param string $invNo  Invoice number.
-     * @param int    $pclass PClass id used for this invoice.
-     * @param bool   $clear  Whether customer info should be cleared after this
-     *                       call.
-     *
-     * @see Klarna::setShipmentInfo()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string An URL to the PDF invoice.
-     */
-    public function activateInvoice(
-        $invNo,
-        $pclass = PClass::INVOICE,
-        $clear = true
-    ) {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-            $pclass,
-            $this->shipInfo,
-        );
-
-        self::printDebug('activate_invoice', $paramList);
-
-        $result = $this->xmlrpc_call('activate_invoice', $paramList);
-
-        if ($clear === true) {
-            $this->clear();
-        }
-
-        self::printDebug('activate_invoice result', $result);
-
-        return $result;
-    }
-
-    /**
      * Removes a passive invoices which has previously been created with
      * True is returned if the invoice was successfully removed, otherwise an
      * exception is thrown.<br>.
@@ -2406,7 +2354,6 @@ class Klarna
      *                       this call.
      *
      * @see Klarna::addArtNo()
-     * @see Klarna::activateInvoice()
      *
      * @throws Exception\KlarnaException
      *
