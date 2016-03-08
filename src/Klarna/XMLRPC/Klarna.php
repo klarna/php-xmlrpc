@@ -2087,7 +2087,7 @@ class Klarna
 
     /**
      * Adds an article number and quantity to be used in
-     * {@link Klarna::creditPart()} and {@link Klarna::invoicePartAmount()}.
+     * {@link Klarna::creditPart()}
      *
      * @param int    $qty   Quantity of specified article.
      * @param string $artNo Article number.
@@ -2431,48 +2431,6 @@ class Klarna
         self::printDebug('update_charge_amount', $paramList);
 
         return $this->xmlrpc_call('update_charge_amount', $paramList);
-    }
-
-    /**
-     * Retrieves the amount of a specific goods from a purchase.
-     *
-     * <b>Note</b>:<br>
-     * You need to call {@link Klarna::addArtNo()} first.<br>
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @see Klarna::addArtNo()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return float The amount of the goods.
-     */
-    public function invoicePartAmount($invNo)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkArtNos($this->artNos);
-
-        //function activate_part_digest
-        $string = $this->_eid.':'.$invNo.':';
-        foreach ($this->artNos as $artNo) {
-            $string .= $artNo['artno'].':'.$artNo['qty'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end activate_part_digest
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $this->artNos,
-            $digestSecret,
-        );
-        $this->artNos = array();
-
-        self::printDebug('invoice_part_amount', $paramList);
-
-        $result = $this->xmlrpc_call('invoice_part_amount', $paramList);
-
-        return $result / 100;
     }
 
     /**
