@@ -2366,41 +2366,6 @@ class Klarna
     }
 
     /**
-     * Retrieves a list of all the customer numbers associated with the
-     * specified pno.
-     *
-     * @param string $pno      Social security number, Personal number, ...
-     * @param int    $encoding {@link Encoding PNO Encoding} constant.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array containing all customer numbers associated
-     *               with that pno.
-     */
-    public function getCustomerNo($pno, $encoding = null)
-    {
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-        $this->_checkPNO($pno, $encoding);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $pno, $this->_secret)
-        );
-        $paramList = array(
-            $pno,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-        );
-
-        self::printDebug('get_customer_no', $paramList);
-
-        return $this->xmlrpc_call('get_customer_no', $paramList);
-    }
-
-    /**
      * Associates a pno with a customer number when you want to make future
      * purchases without a pno.
      *
