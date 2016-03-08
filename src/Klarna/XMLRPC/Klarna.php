@@ -2356,40 +2356,6 @@ class Klarna
     }
 
     /**
-     * Changes the quantity of a specific item in a passive invoice.
-     *
-     * @param string $invNo Invoice number.
-     * @param string $artNo Article number.
-     * @param int    $qty   Quantity of specified article.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string Invoice number.
-     */
-    public function updateGoodsQty($invNo, $artNo, $qty)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkQty($qty);
-        $this->_checkArtNo($artNo);
-
-        $digestSecret = self::digest(
-            self::colon($invNo, $artNo, $qty, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $digestSecret,
-            $invNo,
-            $artNo,
-            $qty,
-        );
-
-        self::printDebug('update_goods_qty', $paramList);
-
-        return $this->xmlrpc_call('update_goods_qty', $paramList);
-    }
-
-    /**
      * Returns the current order status for a specific reservation or invoice.
      * Use this when {@link Klarna::reserveAmount()} returns a {@link Flags::PENDING}
      * status.
