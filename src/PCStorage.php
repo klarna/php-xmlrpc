@@ -147,7 +147,6 @@ abstract class PCStorage
             throw new Klarna_ArgumentNotSetException('country');
         }
 
-        $tmp = false;
         if (!is_array($this->pclasses)) {
             return;
         }
