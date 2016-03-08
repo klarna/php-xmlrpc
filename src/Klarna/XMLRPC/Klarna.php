@@ -2366,36 +2366,6 @@ class Klarna
     }
 
     /**
-     * Removes a customer number from association with a pno.
-     *
-     * @param string $custNo The customer number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool True, if the customer number association was removed.
-     */
-    public function removeCustomerNo($custNo)
-    {
-        $this->_checkArgument($custNo, 'custNo');
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $custNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $custNo,
-            $this->_eid,
-            $digestSecret,
-        );
-
-        self::printDebug('remove_customer_no', $paramList);
-
-        $result = $this->xmlrpc_call('remove_customer_no', $paramList);
-
-        return $result == 'ok';
-    }
-
-    /**
      * Get the PClasses from Klarna Online.<br>
      * You are only allowed to call this once, or once per update of PClasses
      * in KO.<br>.
