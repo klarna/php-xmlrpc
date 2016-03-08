@@ -3620,16 +3620,13 @@ class Klarna
              */
             $this->xmlrpc->verifypeer = false;
 
-            $timestart = microtime(true);
-
-            //Create the XMLRPC message.
-            $msg = new xmlrpcmsg($method);
             $params = array_merge(
                 array(
                     $this->PROTO, $this->VERSION
                 ), $array
             );
-
+            
+            //Create the XMLRPC message.
             $msg = new xmlrpcmsg($method);
             foreach ($params as $p) {
                 if (!$msg->addParam(
@@ -3649,11 +3646,6 @@ class Klarna
                 $this->xmlrpc->setDebug(2);
             }
             $xmlrpcresp = $this->xmlrpc->send($msg);
-
-            //Calculate time and selectTime.
-            $timeend = microtime(true);
-            $time = (int) (($selectDateTime - $timestart) * 1000);
-            $selectTime = (int) (($timeend - $timestart) * 1000);
 
             $status = $xmlrpcresp->faultCode();
 
