@@ -47,6 +47,13 @@ class Klarna
     protected $PROTO = '4.1';
 
     /**
+     * The encoding used in Klarna
+     *
+     * @var string
+     */
+    protected $encoding = 'ISO-8859-1';
+
+    /**
      * Constants used with LIVE mode for the communications with Klarna.
      *
      * @var int
@@ -466,7 +473,7 @@ class Klarna
 
         $this->xmlrpc->setSSLVerifyHost(2);
 
-        $this->xmlrpc->request_charset_encoding = 'ISO-8859-1';
+        $this->xmlrpc->request_charset_encoding = $this->encoding;
     }
 
     /**
@@ -1108,7 +1115,7 @@ class Klarna
     }
 
     /**
-     * Sets order id's from other systems for the upcoming transaction.<br>
+     * Sets order id's from other systems for the upcoming transaction.<br>.
      *
      * @param string $orderid1 order id 1
      * @param string $orderid2 order id 2
@@ -2116,7 +2123,7 @@ class Klarna
 
     /**
      * Adds an article number and quantity to be used in
-     * {@link Klarna::creditPart()}
+     * {@link Klarna::creditPart()}.
      *
      * @param int    $qty   Quantity of specified article.
      * @param string $artNo Article number.
@@ -2443,13 +2450,12 @@ class Klarna
         self::printDebug('get_pclasses result', $result);
 
         $pclasses = array();
-        $charset = Charset::instance();
 
         foreach ($result as $data) {
             $pclass = new PClass();
             $pclass->setEid($this->_eid);
             $pclass->setId($data[0]);
-            $pclass->setDescription($charset->encodeEntities($data[1], '', 'ISO-8859-1'));
+            $pclass->setDescription($data[1]);
             $pclass->setMonths($data[2]);
             $pclass->setStartFee($data[3] / 100);
             $pclass->setInvoiceFee($data[4] / 100);
@@ -2583,6 +2589,9 @@ class Klarna
                 $this->xmlrpc->setDebug(2);
             }
 
+            $internalEncoding = PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding;
+            PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = $this->encoding;
+
             //Send the message.
             $xmlrpcresp = $this->xmlrpc->send(
                 $msg,
@@ -2590,6 +2599,8 @@ class Klarna
             );
 
             $status = $xmlrpcresp->faultCode();
+
+            PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = $internalEncoding;
 
             if ($status !== 0) {
                 throw new Exception\KlarnaException($xmlrpcresp->faultString(), $status);
