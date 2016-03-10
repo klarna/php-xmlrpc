@@ -173,14 +173,6 @@ class Klarna
     protected $shipping;
 
     /**
-     * Estore's user(name) or identifier.
-     * Only used in {@link Klarna::addTransaction()}.
-     *
-     * @var string
-     */
-    protected $estoreUser = '';
-
-    /**
      * External order numbers from other systems.
      *
      * @var string
@@ -959,7 +951,6 @@ class Klarna
      *
      * <b>Available named values are</b>:<br>
      * string - cust_no<br>
-     * string - estore_user<br>
      * string - ready_date<br>
      * string - rand_string<br>
      * int    - bclass<br>
@@ -1118,17 +1109,15 @@ class Klarna
 
     /**
      * Sets order id's from other systems for the upcoming transaction.<br>
-     * User is only sent with {@link Klarna::addTransaction()}.<br>.
      *
      * @param string $orderid1 order id 1
      * @param string $orderid2 order id 2
-     * @param string $user     username
      *
      * @see Klarna::setExtraInfo()
      *
      * @throws Exception\KlarnaException
      */
-    public function setEstoreInfo($orderid1 = '', $orderid2 = '', $user = '')
+    public function setEstoreInfo($orderid1 = '', $orderid2 = '')
     {
         if (!is_string($orderid1)) {
             $orderid1 = strval($orderid1);
@@ -1136,14 +1125,6 @@ class Klarna
 
         if (!is_string($orderid2)) {
             $orderid2 = strval($orderid2);
-        }
-
-        if (!is_string($user)) {
-            $user = strval($user);
-        }
-
-        if (strlen($user) > 0) {
-            $this->setExtraInfo('estore_user', $user);
         }
 
         $this->orderid[0] = $orderid1;
@@ -1198,18 +1179,6 @@ class Klarna
     public function setComment($data)
     {
         $this->comment = $data;
-    }
-
-    /**
-     * Adds an additional comment to the comment field. Appends with a newline.
-     *
-     * @param string $data comment to add
-     *
-     * @see Klarna::setComment()
-     */
-    public function addComment($data)
-    {
-        $this->comment .= "\n".$data;
     }
 
     /**
@@ -1394,9 +1363,7 @@ class Klarna
      *                         ({@link Flags::IS_HANDLING}) and it's price
      *                         ({@link Flags::INC_VAT})
      *
-     * @see Klarna::addTransaction()
      * @see Klarna::reserveAmount()
-     * @see Klarna::activateReservation()
      *
      * @throws Exception\KlarnaException
      */
@@ -1450,267 +1417,6 @@ class Klarna
                 $this->goodsList[count($this->goodsList) - 1]
             );
         }
-    }
-
-    /**
-     * Assembles and sends the current order to Klarna.<br>
-     * This clears all relevant data if $clear is set to true.<br>.
-     *
-     * <b>This method returns an array with</b>:<br>
-     * Invoice number<br>
-     * Order status flag<br>
-     *
-     * If the flag {@link Flags::RETURN_OCR} is used:<br>
-     * Invoice number<br>
-     * OCR number <br>
-     * Order status flag<br>
-     *
-     * <b>Order status can be</b>:<br>
-     * {@link Flags::ACCEPTED}<br>
-     * {@link Flags::PENDING}<br>
-     * {@link Flags::DENIED}<br>
-     *
-     * Gender is only required for Germany and Netherlands.<br>
-     *
-     * <b>Flags can be</b>:<br>
-     * {@link Flags::NO_FLAG}<br>
-     * {@link Flags::TEST_MODE}<br>
-     * {@link Flags::AUTO_ACTIVATE}<br>
-     * {@link Flags::SENSITIVE_ORDER}<br>
-     * {@link Flags::RETURN_OCR}<br>
-     * {@link Flags::M_PHONE_TRANSACTION}<br>
-     * {@link Flags::M_SEND_PHONE_PIN}<br>
-     *
-     * Some flags can be added to each other for multiple options.
-     *
-     * <b>Note</b>:<br>
-     * Normal shipment type is assumed unless otherwise specified,
-     * ou can do this by calling:<br>
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either:<br>
-     * {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT} or
-     * {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}<br>
-     *
-     * @param string $pno      Personal number, SSN, date of birth, etc.
-     * @param int    $gender   {@link Flags::FEMALE} or
-     *                         {@link Flags::MALE},
-     *                         null or "" for unspecified.
-     * @param int    $flags    Options which affect the behaviour.
-     * @param int    $pclass   PClass id used for this invoice.
-     * @param int    $encoding {@link Encoding Encoding} constant for the
-     *                         PNO parameter.
-     * @param bool   $clear    Whether customer info should be cleared after
-     *                         this call or not.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array with invoice number and order status. [string, int]
-     */
-    public function addTransaction(
-        $pno,
-        $gender,
-        $flags = Flags::NO_FLAG,
-        $pclass = PClass::INVOICE,
-        $encoding = null,
-        $clear = true
-    ) {
-        $this->_checkLocale(50023);
-
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-
-        if (!($flags & Flags::PRE_PAY)) {
-            $this->_checkPNO($pno, $encoding);
-        }
-
-        if ($gender === 'm') {
-            $gender = Flags::MALE;
-        } elseif ($gender === 'f') {
-            $gender = Flags::FEMALE;
-        }
-
-        if ($gender !== null && strlen($gender) > 0) {
-            $this->_checkInt($gender, 'gender');
-        }
-
-        $this->_checkInt($flags, 'flags');
-        $this->_checkInt($pclass, 'pclass');
-
-        //Check so required information is set.
-        $this->_checkGoodslist();
-
-        //We need at least one address set
-        if (!($this->billing instanceof Address)
-            && !($this->shipping instanceof Address)
-        ) {
-            throw new \RuntimeException('No address set!');
-        }
-
-        //If only one address is set, copy to the other address.
-        if (!($this->shipping instanceof Address)
-            && ($this->billing instanceof Address)
-        ) {
-            $this->shipping = $this->billing;
-        } elseif (!($this->billing instanceof Address)
-            && ($this->shipping instanceof Address)
-        ) {
-            $this->billing = $this->shipping;
-        }
-
-        //Assume normal shipment unless otherwise specified.
-        if (!isset($this->shipInfo['delay_adjust'])) {
-            $this->setShipmentInfo('delay_adjust', Flags::NORMAL_SHIPMENT);
-        }
-
-        //function add_transaction_digest
-        $string = '';
-        foreach ($this->goodsList as $goods) {
-            $string .= $goods['goods']['title'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end function add_transaction_digest
-
-        $billing = $this->assembleAddr($this->billing);
-        $shipping = $this->assembleAddr($this->shipping);
-
-        //Shipping country must match specified country!
-        if (strlen($shipping['country']) > 0
-            && ($shipping['country'] !== $this->_country)
-        ) {
-            throw new \RuntimeException(
-                'Shipping address country must match the country set!'
-            );
-        }
-
-        $paramList = array(
-            $pno,
-            $gender,
-            $this->reference,
-            $this->reference_code,
-            $this->orderid[0],
-            $this->orderid[1],
-            $shipping,
-            $billing,
-            $this->getClientIP(),
-            $flags,
-            $this->_currency,
-            $this->_country,
-            $this->_language,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-            $pclass,
-            $this->goodsList,
-            $this->comment,
-            $this->shipInfo,
-            $this->travelInfo,
-            $this->incomeInfo,
-            $this->bankInfo,
-            $this->sid,
-            $this->extraInfo,
-        );
-
-        self::printDebug('add_invoice', $paramList);
-
-        $result = $this->xmlrpc_call('add_invoice', $paramList);
-
-        if ($clear === true) {
-            //Make sure any stored values that need to be unique between
-            //purchases are cleared.
-            $this->clear();
-        }
-
-        self::printDebug('add_invoice result', $result);
-
-        return $result;
-    }
-
-    /**
-     * Activates previously created invoice
-     * (from {@link Klarna::addTransaction()}).
-     *
-     * <b>Note</b>:<br>
-     * If you want to change the shipment type, you can specify it using:
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either: {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT} or
-     * {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}
-     *
-     * @param string $invNo  Invoice number.
-     * @param int    $pclass PClass id used for this invoice.
-     * @param bool   $clear  Whether customer info should be cleared after this
-     *                       call.
-     *
-     * @see Klarna::setShipmentInfo()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string An URL to the PDF invoice.
-     */
-    public function activateInvoice(
-        $invNo,
-        $pclass = PClass::INVOICE,
-        $clear = true
-    ) {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-            $pclass,
-            $this->shipInfo,
-        );
-
-        self::printDebug('activate_invoice', $paramList);
-
-        $result = $this->xmlrpc_call('activate_invoice', $paramList);
-
-        if ($clear === true) {
-            $this->clear();
-        }
-
-        self::printDebug('activate_invoice result', $result);
-
-        return $result;
-    }
-
-    /**
-     * Removes a passive invoices which has previously been created with
-     * {@link Klarna::addTransaction()}.
-     * True is returned if the invoice was successfully removed, otherwise an
-     * exception is thrown.<br>.
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool
-     */
-    public function deleteInvoice($invNo)
-    {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-        );
-
-        self::printDebug('delete_invoice', $paramList);
-
-        $result = $this->xmlrpc_call('delete_invoice', $paramList);
-
-        return ($result == 'ok') ? true : false;
     }
 
     /**
@@ -1988,48 +1694,6 @@ class Klarna
     }
 
     /**
-     * Changes specified reservation to a new amount.
-     *
-     * <b>Flags can be either of these</b>:<br>
-     * {@link Flags::NEW_AMOUNT}<br>
-     * {@link Flags::ADD_AMOUNT}<br>
-     *
-     * @param string $rno    Reservation number.
-     * @param int    $amount Amount including VAT.
-     * @param int    $flags  Options which affect the behaviour.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool True, if the change was successful.
-     */
-    public function changeReservation(
-        $rno,
-        $amount,
-        $flags = Flags::NEW_AMOUNT
-    ) {
-        $this->_checkRNO($rno);
-        $this->_checkAmount($amount);
-        $this->_checkInt($flags, 'flags');
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $rno, $amount, $this->_secret)
-        );
-        $paramList = array(
-            $rno,
-            $amount,
-            $this->_eid,
-            $digestSecret,
-            $flags,
-        );
-
-        self::printDebug('change_reservation', $paramList);
-
-        $result = $this->xmlrpc_call('change_reservation', $paramList);
-
-        return ($result  == 'ok') ? true : false;
-    }
-
-    /**
      * Update the reservation matching the given reservation number.
      *
      * @example docs/examples/update.php How to update a reservation.
@@ -2278,155 +1942,6 @@ class Klarna
     }
 
     /**
-     * Activates a previously created reservation.
-     *
-     * <b>This method returns an array with</b>:<br>
-     * Risk status ("no_risk", "ok")<br>
-     * Invoice number<br>
-     *
-     * Gender is only required for Germany and Netherlands.<br>
-     *
-     * Use of the OCR parameter is optional.
-     * An OCR number can be retrieved by using: {@link Klarna::reserveOCR()}.
-     *
-     * <b>Flags can be set to</b>:<br>
-     * {@link Flags::NO_FLAG}<br>
-     * {@link Flags::TEST_MODE}<br>
-     * {@link Flags::RSRV_SEND_BY_MAIL}<br>
-     * {@link Flags::RSRV_SEND_BY_EMAIL}<br>
-     * {@link Flags::RSRV_PRESERVE_RESERVATION}<br>
-     * {@link Flags::RSRV_SENSITIVE_ORDER}<br>
-     *
-     * Some flags can be added to each other for multiple options.
-     *
-     * <b>Note</b>:<br>
-     * Normal shipment type is assumed unless otherwise specified, you can
-     * do this by calling:
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either: {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT} or
-     * {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}<br>
-     *
-     * @param string $pno      Personal number, SSN, date of birth, etc.
-     * @param string $rno      Reservation number.
-     * @param int    $gender   {@link Flags::FEMALE} or
-     *                         {@link Flags::MALE}, null for unspecified.
-     * @param string $ocr      A OCR number.
-     * @param int    $flags    Options which affect the behaviour.
-     * @param int    $pclass   {@link PClass::getId() PClass ID}.
-     * @param int    $encoding {@link Encoding PNO Encoding} constant.
-     * @param bool   $clear    Whether customer info should be cleared after
-     *                         this call.
-     *
-     * @see Klarna::reserveAmount()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array with risk status and invoice number [string, string].
-     */
-    public function activateReservation(
-        $pno,
-        $rno,
-        $gender,
-        $ocr = '',
-        $flags = Flags::NO_FLAG,
-        $pclass = PClass::INVOICE,
-        $encoding = null,
-        $clear = true
-    ) {
-        $this->_checkLocale();
-
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-
-        // Only check PNO if it is not explicitly null.
-        if ($pno !== null) {
-            $this->_checkPNO($pno, $encoding);
-        }
-
-        $this->_checkRNO($rno);
-
-        if ($gender !== null && strlen($gender) > 0) {
-            $this->_checkInt($gender, 'gender');
-        }
-
-        $this->_checkOCR($ocr);
-        $this->_checkRef($this->reference, $this->reference_code);
-
-        $this->_checkGoodslist();
-
-        //No addresses used for phone transactions
-        $billing = $shipping = '';
-        if (!($flags & Flags::RSRV_PHONE_TRANSACTION)) {
-            $billing = $this->assembleAddr($this->billing);
-            $shipping = $this->assembleAddr($this->shipping);
-
-            if (strlen($shipping['country']) > 0
-                && ($shipping['country'] !== $this->_country)
-            ) {
-                throw new \RuntimeException(
-                    'Shipping address country must match the country set!'
-                );
-            }
-        }
-
-        //activate digest
-        $string = $this->_eid.':'.$pno.':';
-        foreach ($this->goodsList as $goods) {
-            $string .= $goods['goods']['artno'].':'.$goods['qty'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end digest
-
-        //Assume normal shipment unless otherwise specified.
-        if (!isset($this->shipInfo['delay_adjust'])) {
-            $this->setShipmentInfo('delay_adjust', Flags::NORMAL_SHIPMENT);
-        }
-
-        $paramList = array(
-            $rno,
-            $ocr,
-            $pno,
-            $gender,
-            $this->reference,
-            $this->reference_code,
-            $this->orderid[0],
-            $this->orderid[1],
-            $shipping,
-            $billing,
-            '0.0.0.0',
-            $flags,
-            $this->_currency,
-            $this->_country,
-            $this->_language,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-            $pclass,
-            $this->goodsList,
-            $this->comment,
-            $this->shipInfo,
-            $this->travelInfo,
-            $this->incomeInfo,
-            $this->bankInfo,
-            $this->extraInfo,
-        );
-
-        self::printDebug('activate_reservation', $paramList);
-
-        $result = $this->xmlrpc_call('activate_reservation', $paramList);
-
-        if ($clear === true) {
-            $this->clear();
-        }
-
-        self::printDebug('activate_reservation result', $result);
-
-        return $result;
-    }
-
-    /**
      * Splits a reservation due to for example outstanding articles.
      *
      * <b>For flags usage see</b>:<br>
@@ -2560,8 +2075,7 @@ class Klarna
 
     /**
      * Adds an article number and quantity to be used in
-     * {@link Klarna::activatePart()}, {@link Klarna::creditPart()}
-     * and {@link Klarna::invoicePartAmount()}.
+     * {@link Klarna::creditPart()}
      *
      * @param int    $qty   Quantity of specified article.
      * @param string $artNo Article number.
@@ -2578,141 +2092,6 @@ class Klarna
         }
 
         $this->artNos[] = array('artno' => $artNo, 'qty' => $qty);
-    }
-
-    /**
-     * Partially activates a passive invoice.
-     *
-     * Returned array contains index "url" and "invno".<br>
-     * The value of "url" is a URL pointing to a temporary PDF-version of the
-     * activated invoice.<br>
-     * The value of "invno" is either 0 if the entire invoice was activated or
-     * the number on the new passive invoice.<br>
-     *
-     * <b>Note</b>:<br>
-     * You need to call {@link Klarna::addArtNo()} first, to specify which
-     * articles and how many you want to partially activate.<br>
-     * If you want to change the shipment type, you can specify it using:
-     * {@link Klarna::setShipmentInfo() setShipmentInfo('delay_adjust', ...)}
-     * with either: {@link Flags::NORMAL_SHIPMENT NORMAL_SHIPMENT}
-     * or {@link Flags::EXPRESS_SHIPMENT EXPRESS_SHIPMENT}
-     *
-     * @param string $invNo  Invoice numbers.
-     * @param int    $pclass PClass id used for this invoice.
-     * @param bool   $clear  Whether customer info should be cleared after
-     *                       this call.
-     *
-     * @see Klarna::addArtNo()
-     * @see Klarna::activateInvoice()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array with invoice URL and invoice number.
-     *               ['url' => val, 'invno' => val]
-     */
-    public function activatePart(
-        $invNo,
-        $pclass = PClass::INVOICE,
-        $clear = true
-    ) {
-        $this->_checkInvNo($invNo);
-        $this->_checkArtNos($this->artNos);
-
-        self::printDebug('activate_part artNos array', $this->artNos);
-
-        //function activate_part_digest
-        $string = $this->_eid.':'.$invNo.':';
-        foreach ($this->artNos as $artNo) {
-            $string .= $artNo['artno'].':'.$artNo['qty'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end activate_part_digest
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $this->artNos,
-            $digestSecret,
-            $pclass,
-            $this->shipInfo,
-        );
-
-        self::printDebug('activate_part array', $paramList);
-
-        $result = $this->xmlrpc_call('activate_part', $paramList);
-
-        if ($clear === true) {
-            $this->clear();
-        }
-
-        self::printDebug('activate_part result', $result);
-
-        return $result;
-    }
-
-    /**
-     * Retrieves the total amount for an active invoice.
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return float The total amount.
-     */
-    public function invoiceAmount($invNo)
-    {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-        );
-
-        self::printDebug('invoice_amount array', $paramList);
-
-        $result = $this->xmlrpc_call('invoice_amount', $paramList);
-
-        //Result is in cents, fix it.
-        return $result / 100;
-    }
-
-    /**
-     * Changes the order number of a purchase that was set when the order was
-     * made online.
-     *
-     * @param string $invNo   Invoice number.
-     * @param string $orderid Estores order number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string Invoice number.
-     */
-    public function updateOrderNo($invNo, $orderid)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkEstoreOrderNo($orderid);
-
-        $digestSecret = self::digest(
-            self::colon($invNo, $orderid, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $digestSecret,
-            $invNo,
-            $orderid,
-        );
-
-        self::printDebug('update_orderno array', $paramList);
-
-        $result = $this->xmlrpc_call('update_orderno', $paramList);
-
-        return $result;
     }
 
     /**
@@ -2931,173 +2310,8 @@ class Klarna
     }
 
     /**
-     * Changes the quantity of a specific item in a passive invoice.
-     *
-     * @param string $invNo Invoice number.
-     * @param string $artNo Article number.
-     * @param int    $qty   Quantity of specified article.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string Invoice number.
-     */
-    public function updateGoodsQty($invNo, $artNo, $qty)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkQty($qty);
-        $this->_checkArtNo($artNo);
-
-        $digestSecret = self::digest(
-            self::colon($invNo, $artNo, $qty, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $digestSecret,
-            $invNo,
-            $artNo,
-            $qty,
-        );
-
-        self::printDebug('update_goods_qty', $paramList);
-
-        return $this->xmlrpc_call('update_goods_qty', $paramList);
-    }
-
-    /**
-     * Changes the amount of a fee (e.g. the invoice fee) in a passive invoice.
-     *
-     * <b>Type can be</b>:<br>
-     * {@link Flags::IS_SHIPMENT}<br>
-     * {@link Flags::IS_HANDLING}<br>
-     *
-     * @param string $invNo     Invoice number.
-     * @param int    $type      Charge type.
-     * @param int    $newAmount The new amount for the charge.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return string Invoice number.
-     */
-    public function updateChargeAmount($invNo, $type, $newAmount)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkInt($type, 'type');
-        $this->_checkAmount($newAmount);
-
-        if ($type === Flags::IS_SHIPMENT) {
-            $type = 1;
-        } elseif ($type === Flags::IS_HANDLING) {
-            $type = 2;
-        }
-
-        $digestSecret = self::digest(
-            self::colon($invNo, $type, $newAmount, $this->_secret)
-        );
-
-        $paramList = array(
-            $this->_eid,
-            $digestSecret,
-            $invNo,
-            $type,
-            $newAmount,
-        );
-
-        self::printDebug('update_charge_amount', $paramList);
-
-        return $this->xmlrpc_call('update_charge_amount', $paramList);
-    }
-
-    /**
-     * The invoice_address function is used to retrieve the address of a
-     * purchase.
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return Address
-     */
-    public function invoiceAddress($invNo)
-    {
-        $this->_checkInvNo($invNo);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $invNo, $this->_secret)
-        );
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $digestSecret,
-        );
-
-        self::printDebug('invoice_address', $paramList);
-
-        $result = $this->xmlrpc_call('invoice_address', $paramList);
-
-        $addr = new Address();
-        if (strlen($result[0]) > 0) {
-            $addr->isCompany = false;
-            $addr->setFirstName($result[0]);
-            $addr->setLastName($result[1]);
-        } else {
-            $addr->isCompany = true;
-            $addr->setCompanyName($result[1]);
-        }
-        $addr->setStreet($result[2]);
-        $addr->setZipCode($result[3]);
-        $addr->setCity($result[4]);
-        $addr->setCountry($result[5]);
-
-        return $addr;
-    }
-
-    /**
-     * Retrieves the amount of a specific goods from a purchase.
-     *
-     * <b>Note</b>:<br>
-     * You need to call {@link Klarna::addArtNo()} first.<br>
-     *
-     * @param string $invNo Invoice number.
-     *
-     * @see Klarna::addArtNo()
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return float The amount of the goods.
-     */
-    public function invoicePartAmount($invNo)
-    {
-        $this->_checkInvNo($invNo);
-        $this->_checkArtNos($this->artNos);
-
-        //function activate_part_digest
-        $string = $this->_eid.':'.$invNo.':';
-        foreach ($this->artNos as $artNo) {
-            $string .= $artNo['artno'].':'.$artNo['qty'].':';
-        }
-        $digestSecret = self::digest($string.$this->_secret);
-        //end activate_part_digest
-
-        $paramList = array(
-            $this->_eid,
-            $invNo,
-            $this->artNos,
-            $digestSecret,
-        );
-        $this->artNos = array();
-
-        self::printDebug('invoice_part_amount', $paramList);
-
-        $result = $this->xmlrpc_call('invoice_part_amount', $paramList);
-
-        return $result / 100;
-    }
-
-    /**
      * Returns the current order status for a specific reservation or invoice.
-     * Use this when {@link Klarna::addTransaction()} or
-     * {@link Klarna::reserveAmount()} returns a {@link Flags::PENDING}
+     * Use this when {@link Klarna::reserveAmount()} returns a {@link Flags::PENDING}
      * status.
      *
      * <b>Order status can be</b>:<br>
@@ -3137,111 +2351,6 @@ class Klarna
         self::printDebug('check_order_status', $paramList);
 
         return $this->xmlrpc_call('check_order_status', $paramList);
-    }
-
-    /**
-     * Retrieves a list of all the customer numbers associated with the
-     * specified pno.
-     *
-     * @param string $pno      Social security number, Personal number, ...
-     * @param int    $encoding {@link Encoding PNO Encoding} constant.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return array An array containing all customer numbers associated
-     *               with that pno.
-     */
-    public function getCustomerNo($pno, $encoding = null)
-    {
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-        $this->_checkPNO($pno, $encoding);
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $pno, $this->_secret)
-        );
-        $paramList = array(
-            $pno,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-        );
-
-        self::printDebug('get_customer_no', $paramList);
-
-        return $this->xmlrpc_call('get_customer_no', $paramList);
-    }
-
-    /**
-     * Associates a pno with a customer number when you want to make future
-     * purchases without a pno.
-     *
-     * @param string $pno      Social security number, Personal number, ...
-     * @param string $custNo   The customer number.
-     * @param int    $encoding {@link Encoding PNO Encoding} constant.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool True, if the customer number was associated with the pno.
-     */
-    public function setCustomerNo($pno, $custNo, $encoding = null)
-    {
-        //Get the PNO/SSN encoding constant.
-        if ($encoding === null) {
-            $encoding = $this->getPNOEncoding();
-        }
-        $this->_checkPNO($pno, $encoding);
-
-        $this->_checkArgument($custNo, 'custNo');
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $pno, $custNo, $this->_secret)
-        );
-        $paramList = array(
-            $pno,
-            $custNo,
-            $this->_eid,
-            $digestSecret,
-            $encoding,
-        );
-
-        self::printDebug('set_customer_no', $paramList);
-
-        $result = $this->xmlrpc_call('set_customer_no', $paramList);
-
-        return $result == 'ok';
-    }
-
-    /**
-     * Removes a customer number from association with a pno.
-     *
-     * @param string $custNo The customer number.
-     *
-     * @throws Exception\KlarnaException
-     *
-     * @return bool True, if the customer number association was removed.
-     */
-    public function removeCustomerNo($custNo)
-    {
-        $this->_checkArgument($custNo, 'custNo');
-
-        $digestSecret = self::digest(
-            self::colon($this->_eid, $custNo, $this->_secret)
-        );
-
-        $paramList = array(
-            $custNo,
-            $this->_eid,
-            $digestSecret,
-        );
-
-        self::printDebug('remove_customer_no', $paramList);
-
-        $result = $this->xmlrpc_call('remove_customer_no', $paramList);
-
-        return $result == 'ok';
     }
 
     /**
@@ -3411,7 +2520,8 @@ class Klarna
             $msg = new PhpXmlRpc\Request($method);
             $params = array_merge(
                 array(
-                    $this->PROTO, $this->VERSION,
+                    $this->PROTO,
+                    $this->VERSION,
                 ),
                 $array
             );
@@ -3433,7 +2543,10 @@ class Klarna
             }
 
             //Send the message.
-            $xmlrpcresp = $this->xmlrpc->send($msg);
+            $xmlrpcresp = $this->xmlrpc->send(
+                $msg,
+                isset($this->config['timeout']) ? intval($this->config['timeout']) : 10
+            );
 
             $status = $xmlrpcresp->faultCode();
 

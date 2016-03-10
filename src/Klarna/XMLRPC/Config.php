@@ -31,6 +31,7 @@ namespace Klarna\XMLRPC;
  * mode        - Klarna::BETA or Klarna::LIVE
  * xmlrpcDebug - XMLRPC debugging (bool)
  * debug       - Normal debugging (bool)
+ * timeout     - XMLRPC timeout in seconds (int)
  */
 class Config implements \ArrayAccess
 {
