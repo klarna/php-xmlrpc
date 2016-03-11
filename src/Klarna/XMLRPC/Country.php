@@ -88,16 +88,16 @@ class Country
     {
         $val = strtoupper($val);
         if (strlen($val) === 3) {
-            if (self::$_tlcFlip === array()) {
-                self::$_tlcFlip = array_flip(self::$_tlcMap);
+            if (self::$tlcFlip === array()) {
+                self::$tlcFlip = array_flip(self::$tlcMap);
             }
-            if (!array_key_exists($val, self::$_tlcFlip)) {
+            if (!array_key_exists($val, self::$tlcFlip)) {
                 return;
             }
-            $val = self::$_tlcFlip[$val];
+            $val = self::$tlcFlip[$val];
         }
-        if (array_key_exists($val, self::$_countries)) {
-            return self::$_countries[$val];
+        if (array_key_exists($val, self::$countries)) {
+            return self::$countries[$val];
         }
 
         return;
@@ -113,15 +113,15 @@ class Country
      */
     public static function getCode($val, $alpha3 = false)
     {
-        if (self::$_countryFlip === array()) {
-            self::$_countryFlip = array_flip(self::$_countries);
+        if (self::$countryFlip === array()) {
+            self::$countryFlip = array_flip(self::$countries);
         }
-        if (!array_key_exists($val, self::$_countryFlip)) {
+        if (!array_key_exists($val, self::$countryFlip)) {
             return;
         }
-        $result = self::$_countryFlip[$val];
+        $result = self::$countryFlip[$val];
         if ($alpha3) {
-            return self::$_tlcMap[$result];
+            return self::$tlcMap[$result];
         }
 
         return $result;
@@ -244,21 +244,21 @@ class Country
         }
     }
 
-    private static $_tlcFlip = array();
+    private static $tlcFlip = array();
 
     /**
      * Cache for the flipped country array.
      *
      * @var array
      */
-    private static $_countryFlip = array();
+    private static $countryFlip = array();
 
     /**
      * Array containing all countries and their KRED Code.
      *
      * @var array
      */
-    private static $_countries = array(
+    private static $countries = array(
         'AF' => 1,   //     AFGHANISTAN
         'AX' => 2,   //     ÅLAND ISLANDS
         'AL' => 3,   //     ALBANIA
@@ -504,7 +504,7 @@ class Country
         'ZW' => 243,  //     ZIMBABWE
     );
 
-    private static $_tlcMap = array(
+    private static $tlcMap = array(
         'AF' => 'AFG',
         'AX' => 'ALA',
         'AL' => 'ALB',

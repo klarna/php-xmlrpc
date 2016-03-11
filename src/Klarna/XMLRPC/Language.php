@@ -87,8 +87,8 @@ class Language
     public static function fromCode($val)
     {
         $val = strtoupper($val);
-        if (array_key_exists($val, self::$_languages)) {
-            return self::$_languages[$val];
+        if (array_key_exists($val, self::$languages)) {
+            return self::$languages[$val];
         }
 
         return;
@@ -103,11 +103,11 @@ class Language
      */
     public static function getCode($val)
     {
-        if (self::$_languageFlip === array()) {
-            self::$_languageFlip = array_flip(self::$_languages);
+        if (self::$languageFlip === array()) {
+            self::$languageFlip = array_flip(self::$languages);
         }
-        if (array_key_exists($val, self::$_languageFlip)) {
-            return strtolower(self::$_languageFlip[$val]);
+        if (array_key_exists($val, self::$languageFlip)) {
+            return strtolower(self::$languageFlip[$val]);
         }
 
         return;
@@ -118,14 +118,14 @@ class Language
      *
      * @var array
      */
-    private static $_languageFlip = array();
+    private static $languageFlip = array();
 
     /**
      * Array containing all languages and their KRED Code.
      *
      * @var array
      */
-    private static $_languages = array(
+    private static $languages = array(
         'AA' => 1,    // Afar
         'AB' => 2,    // Abkhazian
         'AE' => 3,    // Avestan
