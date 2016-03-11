@@ -150,70 +150,36 @@ class Address
      * @throws Exceptions\KlarnaException
      */
     public function __construct(
-        $email = null,
-        $telno = null,
-        $cellno = null,
-        $fname = null,
-        $lname = null,
+        $email = '',
+        $telno = '',
+        $cellno = '',
+        $fname = '',
+        $lname = '',
         $careof = '',
-        $street = null,
-        $zip = null,
-        $city = null,
+        $street = '',
+        $zip = '',
+        $city = '',
         $country = null,
         $houseNo = '',
         $houseExt = ''
     ) {
         //Set all string values to ""
         $this->company = '';
-        $this->telno = '';
-        $this->careof = '';
-        $this->cellno = '';
-        $this->city = '';
-        $this->email = '';
-        $this->fname = '';
-        $this->lname = '';
-        $this->zip = '';
-
-        if ($email !== null) {
-            $this->setEmail($email);
-        }
-
-        if ($telno !== null) {
-            $this->setTelno($telno);
-        }
-
-        if ($cellno !== null) {
-            $this->setCellno($cellno);
-        }
-
-        if ($fname !== null) {
-            $this->setFirstName($fname);
-        }
-
-        if ($lname !== null) {
-            $this->setLastName($lname);
-        }
-
+        $this->setTelno($telno);
         $this->setCareof($careof);
-
-        if ($street !== null) {
-            $this->setStreet($street);
-        }
-
-        if ($zip !== null) {
-            $this->setZipCode($zip);
-        }
-
-        if ($city !== null) {
-            $this->setCity($city);
-        }
+        $this->setCellno($cellno);
+        $this->setCity($city);
+        $this->setEmail($email);
+        $this->setFirstName($fname);
+        $this->setLastName($lname);
+        $this->setStreet($street);
+        $this->setZipCode($zip);
+        $this->setHouseNumber($houseNo);
+        $this->setHouseExt($houseExt);
 
         if ($country !== null) {
             $this->setCountry($country);
         }
-
-        $this->setHouseNumber($houseNo);
-        $this->setHouseExt($houseExt);
     }
 
     /**

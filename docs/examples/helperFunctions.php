@@ -68,7 +68,7 @@ $pclass2->setId(2);
 $amount = 149.99;
 $pclass = $k->getCheapestPClass($amount, Flags::PRODUCT_PAGE, array($pclass1, $pclass2));
 if ($pclass) {
-    $monthly = Calc::calc_monthly_cost($amount, $pclass, Flags::PRODUCT_PAGE);
+    $monthly = Calc::calcMonthlyCost($amount, $pclass, Flags::PRODUCT_PAGE);
 
     echo "monthly cost: {$monthly}\n";
 }
@@ -77,7 +77,7 @@ if ($pclass) {
 
 $amount = 100.50;
 if ($pclass) {
-    $total = Calc::total_credit_purchase_cost($amount, $pclass1, Flags::CHECKOUT_PAGE);
+    $total = Calc::totalCreditPurchaseCost($amount, $pclass1, Flags::CHECKOUT_PAGE);
 
     echo "total credit purchase cost: {$total}\n";
 }
@@ -86,7 +86,7 @@ if ($pclass) {
 
 $amount = 105.50;
 if ($pclass) {
-    $apr = Calc::calc_apr($amount, $pclass2, Flags::CHECKOUT_PAGE);
+    $apr = Calc::calcApr($amount, $pclass2, Flags::CHECKOUT_PAGE);
 
     echo "apr: {$apr}\n";
 }

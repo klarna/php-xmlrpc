@@ -55,7 +55,7 @@ class Calc
      *
      * @return float
      */
-    private static function _midpoint($a, $b)
+    private static function midpoint($a, $b)
     {
         return ($a + $b) / 2;
     }
@@ -75,7 +75,7 @@ class Calc
      *
      * @return float
      */
-    private static function _npv($pval, $payarray, $rate, $fromdayone)
+    private static function npv($pval, $payarray, $rate, $fromdayone)
     {
         $month = $fromdayone;
         foreach ($payarray as $payment) {
@@ -108,12 +108,12 @@ class Calc
      *
      * @return float
      */
-    private static function _irr($pval, $payarray, $fromdayone)
+    private static function irr($pval, $payarray, $fromdayone)
     {
         $low = 0.0;
         $high = 100.0;
-        $lowval = self::_npv($pval, $payarray, $low, $fromdayone);
-        $highval = self::_npv($pval, $payarray, $high, $fromdayone);
+        $lowval = self::npv($pval, $payarray, $low, $fromdayone);
+        $highval = self::npv($pval, $payarray, $high, $fromdayone);
 
         // The sum of $payarray is smaller than $pval, impossible!
         if ($lowval > 0.0) {
@@ -122,8 +122,8 @@ class Calc
 
         // Standard divide and conquer.
         do {
-            $mid = self::_midpoint($low, $high);
-            $midval = self::_npv($pval, $payarray, $mid, $fromdayone);
+            $mid = self::midpoint($low, $high);
+            $midval = self::npv($pval, $payarray, $mid, $fromdayone);
             if (abs($midval) < self::$accuracy) {
                 //we are close enough
                 return $mid;
@@ -134,7 +134,7 @@ class Calc
                 $low = $high;
                 $lowval = $highval;
                 $high *= 2;
-                $highval = self::_npv($pval, $payarray, $high, $fromdayone);
+                $highval = self::npv($pval, $payarray, $high, $fromdayone);
             } elseif ($midval >= 0.0) {
                 // irr is between low and mid
                 $high = $mid;
@@ -166,7 +166,7 @@ class Calc
      *
      * @return float Annual Percentage Rate, in %
      */
-    private static function _irr2apr($irr)
+    private static function irr2apr($irr)
     {
         return 100 * (pow(1 + $irr / (12 * 100.0), 12) - 1);
     }
@@ -203,7 +203,7 @@ class Calc
      *
      * @return array An array of monthly payments for the customer.
      */
-    private static function _fulpacc(
+    private static function fulpacc(
         $pval,
         $rate,
         $fee,
@@ -252,7 +252,7 @@ class Calc
      *
      * @return float monthly payment
      */
-    private static function _annuity($pval, $months, $rate)
+    private static function annuity($pval, $months, $rate)
     {
         if ($months == 0) {
             return $pval;
@@ -280,13 +280,13 @@ class Calc
      *
      * @return float APR in %
      */
-    private static function _aprAnnuity($pval, $months, $rate, $fee, $minpay)
+    private static function aprAnnuity($pval, $months, $rate, $fee, $minpay)
     {
-        $payment = self::_annuity($pval, $months, $rate) + $fee;
+        $payment = self::annuity($pval, $months, $rate) + $fee;
         if ($payment < 0) {
             return $payment;
         }
-        $payarray = self::_fulpacc(
+        $payarray = self::fulpacc(
             $pval,
             $rate,
             $fee,
@@ -295,7 +295,7 @@ class Calc
             $months,
             false
         );
-        $apr = self::_irr2apr(self::_irr($pval, $payarray, 1));
+        $apr = self::irr2apr(self::irr($pval, $payarray, 1));
 
         return $apr;
     }
@@ -315,7 +315,7 @@ class Calc
      *
      * @return array An array of monthly payments.
      */
-    private static function _getPayArray($sum, $pclass, $flags)
+    private static function getPayArray($sum, $pclass, $flags)
     {
         $monthsfee = 0;
         if ($flags === Flags::CHECKOUT_PAGE) {
@@ -330,7 +330,7 @@ class Calc
         $sum += $startfee;
 
         $base = ($pclass->getType() === PClass::ACCOUNT);
-        $lowest = self::get_lowest_payment_for_account($pclass->getCountry());
+        $lowest = self::getLowestPaymentForAccount($pclass->getCountry());
 
         if ($flags == Flags::CHECKOUT_PAGE) {
             $minpay = ($pclass->getType() === PClass::ACCOUNT) ? $lowest : 0;
@@ -338,7 +338,7 @@ class Calc
             $minpay = 0;
         }
 
-        $payment = self::_annuity(
+        $payment = self::annuity(
             $sum,
             $pclass->getMonths(),
             $pclass->getInterestRate()
@@ -347,7 +347,7 @@ class Calc
         //Add monthly fee
         $payment += $monthsfee;
 
-        return  self::_fulpacc(
+        return  self::fulpacc(
             $sum,
             $pclass->getInterestRate(),
             $monthsfee,
@@ -376,7 +376,7 @@ class Calc
      *
      * @return float APR in %
      */
-    public static function calc_apr($sum, PClass $pclass, $flags, $free = 0)
+    public static function calcApr($sum, PClass $pclass, $flags, $free = 0)
     {
         if (!is_numeric($sum)) {
             throw new \InvalidArgumentException('sum must be numeric');
@@ -428,7 +428,7 @@ class Calc
         //Include start fee in sum
         $sum += $startfee;
 
-        $lowest = self::get_lowest_payment_for_account($pclass->getCountry());
+        $lowest = self::getLowestPaymentForAccount($pclass->getCountry());
 
         if ($flags == Flags::CHECKOUT_PAGE) {
             $minpay = ($pclass->getType() === PClass::ACCOUNT) ? $lowest : 0;
@@ -437,7 +437,7 @@ class Calc
         }
 
         //add monthly fee
-        $payment = self::_annuity(
+        $payment = self::annuity(
             $sum,
             $pclass->getMonths(),
             $pclass->getInterestRate()
@@ -448,7 +448,7 @@ class Calc
             case PClass::CAMPAIGN:
             case PClass::ACCOUNT:
                 return round(
-                    self::_aprAnnuity(
+                    self::aprAnnuity(
                         $sum,
                         $pclass->getMonths(),
                         $pclass->getInterestRate(),
@@ -488,7 +488,7 @@ class Calc
      *
      * @return float Total credit purchase cost.
      */
-    public static function total_credit_purchase_cost($sum, PClass $pclass, $flags)
+    public static function totalCreditPurchaseCost($sum, PClass $pclass, $flags)
     {
         if (!is_numeric($sum)) {
             throw new \InvalidArgumentException('Expected $sum to be numeric');
@@ -515,7 +515,7 @@ class Calc
             );
         }
 
-        $payarr = self::_getPayArray($sum, $pclass, $flags);
+        $payarr = self::getPayArray($sum, $pclass, $flags);
 
         $credit_cost = 0;
         foreach ($payarr as $pay) {
@@ -558,7 +558,7 @@ class Calc
      *
      * @return float The monthly cost.
      */
-    public static function calc_monthly_cost($sum, PClass $pclass, $flags)
+    public static function calcMonthlyCost($sum, PClass $pclass, $flags)
     {
         if (!is_numeric($sum)) {
             throw new \InvalidArgumentException('Expected $sum to be numeric');
@@ -589,7 +589,7 @@ class Calc
             );
         }
 
-        $payarr = self::_getPayArray($sum, $pclass, $flags);
+        $payarr = self::getPayArray($sum, $pclass, $flags);
         $value = 0;
         if (isset($payarr[0])) {
             $value = $payarr[0];
@@ -611,7 +611,7 @@ class Calc
      *
      * @return int|float Lowest monthly payment.
      */
-    public static function get_lowest_payment_for_account($country)
+    public static function getLowestPaymentForAccount($country)
     {
         $country = Country::getCode($country);
 
