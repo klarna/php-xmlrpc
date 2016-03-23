@@ -49,6 +49,13 @@ class Klarna
     protected $encoding = 'ISO-8859-1';
 
     /**
+     * To override encoding used for Klarna Responses.
+     *
+     * @var string f.e. "UTF-8" or "ASCII"
+     */
+    protected $internalEncoding;
+
+    /**
      * Constants used with LIVE mode for the communications with Klarna.
      *
      * @var int
@@ -461,6 +468,14 @@ class Klarna
         $this->xmlrpc->setSSLVerifyHost(2);
 
         $this->xmlrpc->request_charset_encoding = $this->encoding;
+
+        try {
+            $this->hasFields('encoding');
+            $this->internalEncoding = $this->config['encoding'];
+        } catch (\Exception $e) {
+            //No 'debug' field ignore it...
+        }
+
     }
 
     /**
@@ -475,6 +490,7 @@ class Klarna
      * @param int    $language {@link Language}
      * @param int    $currency {@link Currency}
      * @param int    $mode     {@link Klarna::LIVE} or {@link Klarna::BETA}
+     * @param string $encoding Set this if you don't work with ISO-8859-1. You can use ini_get("default_charset").
      *
      * @see Klarna::setConfig()
      * @see Config
@@ -487,7 +503,8 @@ class Klarna
         $country,
         $language,
         $currency,
-        $mode = self::LIVE
+        $mode = self::LIVE,
+        $encoding = null
     ) {
         try {
             $this->config = new Config(null);
@@ -498,6 +515,7 @@ class Klarna
             $this->config['language'] = $language;
             $this->config['currency'] = $currency;
             $this->config['mode'] = $mode;
+            $this->config['encoding'] = $encoding;
 
             $this->init();
         } catch (\Exception $e) {
@@ -2578,7 +2596,7 @@ class Klarna
             }
 
             $internalEncoding = PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding;
-            PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = $this->encoding;
+            PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = $this->internalEncoding ?: $this->encoding;
 
             //Send the message.
             $xmlrpcresp = $this->xmlrpc->send(
