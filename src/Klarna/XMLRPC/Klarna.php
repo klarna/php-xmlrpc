@@ -470,8 +470,8 @@ class Klarna
         $this->xmlrpc->request_charset_encoding = $this->encoding;
 
         try {
-            $this->hasFields('encoding');
-            $this->internalEncoding = $this->config['encoding'];
+            $this->hasFields('internalEncoding');
+            $this->internalEncoding = $this->config['internalEncoding'];
         } catch (\Exception $e) {
             //No 'debug' field ignore it...
         }
@@ -515,7 +515,7 @@ class Klarna
             $this->config['language'] = $language;
             $this->config['currency'] = $currency;
             $this->config['mode'] = $mode;
-            $this->config['encoding'] = $encoding;
+            $this->config['internalEncoding'] = $encoding;
 
             $this->init();
         } catch (\Exception $e) {
