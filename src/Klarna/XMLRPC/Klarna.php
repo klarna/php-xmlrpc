@@ -505,6 +505,7 @@ class Klarna
         $currency,
         $mode = self::LIVE,
         $encoding = null
+        
     ) {
         try {
             $this->config = new Config(null);
