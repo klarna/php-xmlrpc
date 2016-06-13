@@ -4,3 +4,5 @@ pclasses.xml
 *.sublime-project
 *.sublime-workspace
 *.zip
+.idea
+composer.lock
