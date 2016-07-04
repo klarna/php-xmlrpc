@@ -16,7 +16,7 @@ payments worldwide and change the way the world shops online.
 ## Get started
 
 ### Prerequisites
-* PHP 5.2.16 or above
+* PHP 5.4.0 or above
 * API credentials
 
 
