@@ -2577,9 +2577,6 @@ class Klarna
                 $this->xmlrpc->setDebug(2);
             }
 
-            $internalEncoding = PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding;
-            PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = $this->encoding;
-
             //Send the message.
             $xmlrpcresp = $this->xmlrpc->send(
                 $msg,
@@ -2587,8 +2584,6 @@ class Klarna
             );
 
             $status = $xmlrpcresp->faultCode();
-
-            PhpXmlRpc\PhpXmlRpc::$xmlrpc_internalencoding = $internalEncoding;
 
             if ($status !== 0) {
                 throw new Exception\KlarnaException($xmlrpcresp->faultString(), $status);
