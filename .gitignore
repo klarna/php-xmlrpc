@@ -1,6 +1,8 @@
+/.idea/
 /vendor/
 pclasses.json
 pclasses.xml
 *.sublime-project
 *.sublime-workspace
 *.zip
+composer.lock
