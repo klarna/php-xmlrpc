@@ -1870,7 +1870,7 @@ class Klarna
      * @throws Exception\KlarnaException when the RNO is not specified, or if an error
      *                                   is received from Klarna Online.
      *
-     * @return A string array with risk status and reservation number.
+     * @return array An array of strings containing risk status and reservation number.
      */
     public function activate(
         $rno,
