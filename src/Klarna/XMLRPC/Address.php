@@ -147,7 +147,7 @@ class Address
      * @param string     $houseNo  House number, only used in DE and NL.
      * @param string     $houseExt House extension, only used in NL.
      *
-     * @throws Exceptions\KlarnaException
+     * @throws Exception\KlarnaException
      */
     public function __construct(
         $email = '',
@@ -441,7 +441,7 @@ class Address
     /**
      * Returns the country as a two letter representation.
      *
-     * @throws Exceptions\KlarnaException
+     * @throws Exception\KlarnaException
      *
      * @return string E.g. 'de', 'dk', ...
      */
@@ -456,7 +456,7 @@ class Address
      *
      * @param int $country {@link Country}
      *
-     * @throws Exceptions\KlarnaException
+     * @throws Exception\KlarnaException
      */
     public function setCountry($country)
     {
