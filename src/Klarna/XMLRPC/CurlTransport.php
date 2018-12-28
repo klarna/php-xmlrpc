@@ -55,7 +55,7 @@ class CurlTransport
      *
      * @param object $request The request to send
      *
-     * @throws Exceptions\KlarnaException For e.g. a timeout
+     * @throws Exception\KlarnaException For e.g. a timeout
      *
      * @return object A response to the request sent
      */
@@ -83,7 +83,7 @@ class CurlTransport
          * info is false, then it has no HTTP status code.
          */
         if (strlen($error) > 0) {
-            throw new Exceptions\KlarnaException(
+            throw new Exception\KlarnaException(
                 "Connection failed with error: {$error}"
             );
         }
