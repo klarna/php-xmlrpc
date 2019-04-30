@@ -1,5 +1,10 @@
-# Klarna XMLRPC PHP SDK
+# Klarna XMLRPC PHP SDK (DEPRECATED)
 [![Packagist Version][packagist-image]](https://packagist.org/packages/klarna/php-xmlrpc)
+
+# Deprecation notice
+
+This repo has been marked as deprecated. The SDK is not longer supported.  
+Please use https://github.com/klarna/kco_rest_php SDK instead.
 
 ## About Klarna
 Klarna was founded in Stockholm in 2005 with the idea of providing a
