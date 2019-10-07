@@ -27,5 +27,6 @@
     "scripts": {
         "zip": "composer install --prefer-dist --optimize-autoloader --no-dev && composer archive --format=zip",
         "reference": "vendor/bin/apigen generate -s src -d docs/reference --template-config='vendor/klarna/apigen-theme/src/config.neon'"
-    }
+    },
+    "abandoned": "klarna/kco_rest"
 }
