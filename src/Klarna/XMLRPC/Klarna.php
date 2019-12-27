@@ -1401,8 +1401,8 @@ class Klarna
 
         //Add the temp array and quantity field to the internal goods list.
         $this->goodsList[] = array(
-                'goods' => $tmpArr,
-                'qty' => $qty,
+            'goods' => $tmpArr,
+            'qty' => $qty,
         );
 
         if (count($this->goodsList) > 0) {
@@ -2387,6 +2387,32 @@ class Klarna
         self::printDebug('check_order_status', $paramList);
 
         return $this->xmlrpcCall('check_order_status', $paramList);
+    }
+    public function checkInvoiceStatus($invNo)
+    {
+        $digestSecret = self::digest(
+            self::colon($this->eid, $invNo, $this->secret)
+        );
+        $paramList = array(
+            $this->eid,
+            $invNo,
+            $digestSecret,
+        );
+        self::printDebug('order_info', $paramList);
+        return $this->xmlrpcCall('order_info', $paramList);
+    }
+    public function findInvoice($orderId1)
+    {
+        $digestSecret = self::digest(
+            self::colon($this->eid, $orderId1, $this->secret)
+        );
+        $paramList = array(
+            $this->eid,
+            $orderId1,
+            $digestSecret,
+        );
+        self::printDebug('lookup_invoice', $paramList);
+        return $this->xmlrpcCall('lookup_invoice', $paramList);
     }
 
     /**
